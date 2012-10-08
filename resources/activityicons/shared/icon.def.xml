@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<icondef>
+  <icon>
+    <key>doing_chores</key>
+    <object mime="image/png">01-doing_chores.png</object>
+  </icon>
+  <icon>
+    <key>buying_groceries</key>
+    <object mime="image/png">02-buying_groceries.png</object>
+  </icon>
+  <icon>
+    <key>cleaning</key>
+    <object mime="image/png">03-cleaning.png</object>
+  </icon>
+  <icon>
+    <key>cooking</key>
+    <object mime="image/png">04-cooking.png</object>
+  </icon>
+  <icon>
+    <key>doing_maintenance</key>
+    <object mime="image/png">05-doing_maintenance.png</object>
+  </icon>
+  <icon>
+    <key>doing_the_dishes</key>
+    <object mime="image/png">06-doing_the_dishes.png</object>
+  </icon>
+  <icon>
+    <key>doing_the_laundry</key>
+    <object mime="image/png">07-doing_the_laundry.png</object>
+  </icon>
+  <icon>
+    <key>gardening</key>
+    <object mime="image/png">08-gardening.png</object>
+  </icon>
+  <icon>
+    <key>running_an_errand</key>
+    <object mime="image/png">09-running_an_errand.png</object>
+  </icon>
+  <icon>
+    <key>walking_the_dog</key>
+    <object mime="image/png">10-walking_the_dog.png</object>
+  </icon>
+  <icon>
+    <key>drinking</key>
+    <object mime="image/png">11-drinking.png</object>
+  </icon>
+  <icon>
+    <key>having_a_beer</key>
+    <object mime="image/png">12-having_a_beer.png</object>
+  </icon>
+  <icon>
+    <key>having_coffee</key>
+    <object mime="image/png">13-having_coffee.png</object>
+  </icon>
+  <icon>
+    <key>having_tea</key>
+    <object mime="image/png">14-having_tea.png</object>
+  </icon>
+  <icon>
+    <key>eating</key>
+    <object mime="image/png">15-eating.png</object>
+  </icon>
+  <icon>
+    <key>having_a_snack</key>
+    <object mime="image/png">16-having_a_snack.png</object>
+  </icon>
+  <icon>
+    <key>having_breakfast</key>
+    <object mime="image/png">17-having_breakfast.png</object>
+  </icon>
+  <icon>
+    <key>having_dinner</key>
+    <object mime="image/png">18-having_dinner.png</object>
+  </icon>
+  <icon>
+    <key>having_lunch</key>
+    <object mime="image/png">19-having_lunch.png</object>
+  </icon>
+  <icon>
+    <key>exercising</key>
+    <object mime="image/png">20-exercising.png</object>
+  </icon>
+  <icon>
+    <key>cycling</key>
+    <object mime="image/png">21-cycling.png</object>
+  </icon>
+  <icon>
+    <key>dancing</key>
+    <object mime="image/png">22-dancing.png</object>
+  </icon>
+  <icon>
+    <key>hiking</key>
+    <object mime="image/png">23-hiking.png</object>
+  </icon>
+  <icon>
+    <key>jogging</key>
+    <object mime="image/png">24-jogging.png</object>
+  </icon>
+  <icon>
+    <key>playing_sports</key>
+    <object mime="image/png">25-playing_sports.png</object>
+  </icon>
+  <icon>
+    <key>running</key>
+    <object mime="image/png">26-running.png</object>
+  </icon>
+  <icon>
+    <key>skiing</key>
+    <object mime="image/png">27-skiing.png</object>
+  </icon>
+  <icon>
+    <key>swimming</key>
+    <object mime="image/png">28-swimming.png</object>
+  </icon>
+  <icon>
+    <key>working_out</key>
+    <object mime="image/png">29-working_out.png</object>
+  </icon>
+  <icon>
+    <key>grooming</key>
+    <object mime="image/png">30-grooming.png</object>
+  </icon>
+  <icon>
+    <key>at_the_spa</key>
+    <object mime="image/png">31-at_the_spa.png</object>
+  </icon>
+  <icon>
+    <key>brushing_teeth</key>
+    <object mime="image/png">32-brushing_teeth.png</object>
+  </icon>
+  <icon>
+    <key>getting_a_haircut</key>
+    <object mime="image/png">33-getting_a_haircut.png</object>
+  </icon>
+  <icon>
+    <key>shaving</key>
+    <object mime="image/png">34-shaving.png</object>
+  </icon>
+  <icon>
+    <key>taking_a_bath</key>
+    <object mime="image/png">35-taking_a_bath.png</object>
+  </icon>
+  <icon>
+    <key>taking_a_shower</key>
+    <object mime="image/png">36-taking_a_shower.png</object>
+  </icon>
+  <icon>
+    <key>having_appointment</key>
+    <object mime="image/png">37-having_appointment.png</object>
+  </icon>
+  <icon>
+    <key>inactive</key>
+    <object mime="image/png">38-inactive.png</object>
+  </icon>
+  <icon>
+    <key>day_off</key>
+    <object mime="image/png">39-day_off.png</object>
+  </icon>
+  <icon>
+    <key>hanging_out</key>
+    <object mime="image/png">40-hanging_out.png</object>
+  </icon>
+  <icon>
+    <key>hiding</key>
+    <object mime="image/png">41-hiding.png</object>
+  </icon>
+  <icon>
+    <key>on_vacation</key>
+    <object mime="image/png">42-on_vacation.png</object>
+  </icon>
+  <icon>
+    <key>praying</key>
+    <object mime="image/png">43-praying.png</object>
+  </icon>
+  <icon>
+    <key>scheduled_holiday</key>
+    <object mime="image/png">44-scheduled_holiday.png</object>
+  </icon>
+  <icon>
+    <key>sleeping</key>
+    <object mime="image/png">45-sleeping.png</object>
+  </icon>
+  <icon>
+    <key>thinking</key>
+    <object mime="image/png">46-thinking.png</object>
+  </icon>
+  <icon>
+    <key>relaxing</key>
+    <object mime="image/png">47-relaxing.png</object>
+  </icon>
+  <icon>
+    <key>fishing</key>
+    <object mime="image/png">48-fishing.png</object>
+  </icon>
+  <icon>
+    <key>gaming</key>
+    <object mime="image/png">49-gaming.png</object>
+  </icon>
+  <icon>
+    <key>going_out</key>
+    <object mime="image/png">50-going_out.png</object>
+  </icon>
+  <icon>
+    <key>partying</key>
+    <object mime="image/png">51-partying.png</object>
+  </icon>
+  <icon>
+    <key>reading</key>
+    <object mime="image/png">52-reading.png</object>
+  </icon>
+  <icon>
+    <key>rehearsing</key>
+    <object mime="image/png">53-rehearsing.png</object>
+  </icon>
+  <icon>
+    <key>shopping</key>
+    <object mime="image/png">54-shopping.png</object>
+  </icon>
+  <icon>
+    <key>smoking</key>
+    <object mime="image/png">55-smoking.png</object>
+  </icon>
+  <icon>
+    <key>socializing</key>
+    <object mime="image/png">56-socializing.png</object>
+  </icon>
+  <icon>
+    <key>sunbathing</key>
+    <object mime="image/png">57-sunbathing.png</object>
+  </icon>
+  <icon>
+    <key>watching_tv</key>
+    <object mime="image/png">58-watching_tv.png</object>
+  </icon>
+  <icon>
+    <key>watching_a_movie</key>
+    <object mime="image/png">59-watching_a_movie.png</object>
+  </icon>
+  <icon>
+    <key>talking</key>
+    <object mime="image/png">60-talking.png</object>
+  </icon>
+  <icon>
+    <key>in_real_life</key>
+    <object mime="image/png">61-in_real_life.png</object>
+  </icon>
+  <icon>
+    <key>on_the_phone</key>
+    <object mime="image/png">62-on_the_phone.png</object>
+  </icon>
+  <icon>
+    <key>on_video_phone</key>
+    <object mime="image/png">63-on_video_phone.png</object>
+  </icon>
+  <icon>
+    <key>traveling</key>
+    <object mime="image/png">64-traveling.png</object>
+  </icon>
+  <icon>
+    <key>commuting</key>
+    <object mime="image/png">65-commuting.png</object>
+  </icon>
+  <icon>
+    <key>cycling</key>
+    <object mime="image/png">66-cycling.png</object>
+  </icon>
+  <icon>
+    <key>driving</key>
+    <object mime="image/png">67-driving.png</object>
+  </icon>
+  <icon>
+    <key>in_a_car</key>
+    <object mime="image/png">68-in_a_car.png</object>
+  </icon>
+  <icon>
+    <key>on_a_bus</key>
+    <object mime="image/png">69-on_a_bus.png</object>
+  </icon>
+  <icon>
+    <key>on_a_plane</key>
+    <object mime="image/png">70-on_a_plane.png</object>
+  </icon>
+  <icon>
+    <key>on_a_train</key>
+    <object mime="image/png">71-on_a_train.png</object>
+  </icon>
+  <icon>
+    <key>on_a_trip</key>
+    <object mime="image/png">72-on_a_trip.png</object>
+  </icon>
+  <icon>
+    <key>walking</key>
+    <object mime="image/png">73-walking.png</object>
+  </icon>
+  <icon>
+    <key>working</key>
+    <object mime="image/png">74-working.png</object>
+  </icon>
+  <icon>
+    <key>coding</key>
+    <object mime="image/png">75-coding.png</object>
+  </icon>
+  <icon>
+    <key>in_a_meeting</key>
+    <object mime="image/png">76-in_a_meeting.png</object>
+  </icon>
+  <icon>
+    <key>studying</key>
+    <object mime="image/png">77-studying.png</object>
+  </icon>
+  <icon>
+    <key>writing</key>
+    <object mime="image/png">78-writing.png</object>
+  </icon>
+  <icon>
+    <key>unknown</key>
+    <object mime="image/png">79-unknown.png</object>
+  </icon>  
+</icondef>
