@@ -16,18 +16,17 @@ class UserActivityDialog : public QDialog
 
 public:
 	UserActivityDialog(IUserActivity *AUserActivity,
-					   const QMap<QString, ActivityData> &AActivityCatalog,
+					   const QHash<QString, ActivityData> &AActivityCatalog,
+					   const QList<QString> &AActivityList,
 					   Jid &AStreamJid, QWidget *AParent = 0);
 	~UserActivityDialog();
 
 protected slots:
 	void onDialogAccepted();
-	void loadSpecific(const int &itemKey);
 
 private:
 	Ui::UserActivityDialog ui;
 	IUserActivity *FUserActivity;
-	QMap<QString, ActivityData> FActivityCatalog;
 	Jid FStreamJid;
 };
 

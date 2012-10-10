@@ -1,11 +1,10 @@
 INFORMATION
 ===========
-  UserMood extension plugin for Vacuum-IM
-  Provides support XEP-0107
+  UserActivity extension plugin for Vacuum-IM
+  Provides support XEP-0108
 
   Authors:
     Alexey Ivanov - <alexey.ivanes@gmail.com>
-    Sergey A Potapov - <potapov.s.a@gmail.com>
 
   Web Site:
     http://code.google.com/p/vacuum-plugins/
@@ -46,8 +45,7 @@ CHANGELOG
 
   v0.2
   ------
-  [-] Correct pupsub detection.
-  [-] Fixed tooltips. No new empty line.
+  [-] Updated dialog
 
   v0.1
   ------

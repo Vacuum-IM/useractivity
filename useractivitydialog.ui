@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>361</width>
-    <height>207</height>
+    <width>320</width>
+    <height>160</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -15,10 +15,7 @@
     <number>5</number>
    </property>
    <item>
-    <widget class="QComboBox" name="cmbGeneral"/>
-   </item>
-   <item>
-    <widget class="QComboBox" name="cmbSpecific"/>
+    <widget class="QComboBox" name="cmbActivity"/>
    </item>
    <item>
     <widget class="QPlainTextEdit" name="pteText"/>

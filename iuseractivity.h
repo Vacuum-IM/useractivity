@@ -11,17 +11,12 @@
 #define USERACTIVITY_UUID "{f916b5a0-0cc2-11e2-892e-0800200c9a66}"
 #define PEP_USERACTIVITY 4020
 
-//class ActivityData
-//{
-//public:
-//	ActivityData() {}
-//	ActivityData(const QString &locname) : locname(locname) {}
-//	ActivityData(const QString &icon, const QString &locname) :
-//		locname(locname), icon(IconStorage::staticStorage(RSR_STORAGE_ACTIVITYICONS)->getIcon(icon)) {}
-
-//	QString locname;
-//	QIcon icon;
-//};
+struct Activity
+{
+	QString general;
+	QString specific;
+	QString text;
+};
 
 struct ActivityData
 {
@@ -29,14 +24,6 @@ struct ActivityData
 	QString locname;
 	QIcon icon;
 };
-
-struct ActivityTempData
-{
-	QString activityGeneral;
-	QString activitySpecific;
-	QString activityText;
-};
-
 
 class ActivityContact
 {
@@ -49,7 +36,7 @@ class IUserActivity
 {
 public:
 	virtual QObject *instance() = 0;
-	virtual void setActivity(const Jid &AStreamJid, const ActivityTempData &tempData) = 0;
+	virtual void setActivity(const Jid &AStreamJid, const ActivityContact &contact) = 0;
 	virtual QIcon activityIcon(const QString &keyname) const = 0;
 	virtual QString activityName(const QString &keyname) const = 0;
 	virtual QIcon contactActivityIcon(const Jid &contactJid) const = 0;

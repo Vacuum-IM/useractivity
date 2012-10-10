@@ -66,7 +66,7 @@ public:
 	virtual bool processPEPEvent(const Jid &streamJid, const Stanza &stanza);
 
 	//IUserMood
-	virtual void setActivity(const Jid &AStreamJid, const ActivityTempData &tempData);
+	virtual void setActivity(const Jid &AStreamJid, const ActivityContact &contact);
 	virtual QIcon activityIcon(const QString &keyname) const;
 	virtual QString activityName(const QString &keyname) const;
 	virtual QIcon contactActivityIcon(const Jid &contactJid) const;
@@ -95,7 +95,7 @@ protected slots:
 protected:
 	void addActivity(const QString &keyname, const QString &general, const QString &locname);
 	Action *createSetActivityAction(const Jid &AStreamJid, const QString &AFeature, QObject *AParent) const;
-	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const ActivityTempData &tempData);
+	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &data);
 
 	//IRosterDataHolder
 	void updateDataHolder(const Jid &ASenderJid = Jid::null);
@@ -115,13 +115,9 @@ private:
 	int FUserActivityLabelId;
 
 	QMap<int, Jid> FNotifies;
-	//QMap<QString/*general*/, QMap<QString/*spicific*/, ActivityData> > FActivityCatalog;
-	QMap<QString, ActivityData> FActivityCatalog;
-
-	QMap<QString, ActivityContact> FActivityContact;
-
+	QList<QString> FActivityList;
+	QHash<QString, ActivityData> FActivityCatalog;
+	QHash<QString, ActivityContact> FActivityContact;
 };
 
 #endif // USERACTIVITY_H
-
-

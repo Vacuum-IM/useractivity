@@ -1,7 +1,5 @@
 #include "useractivity.h"
 
-#include <QDebug>
-
 #define ADR_STREAM_JID	Action::DR_StreamJid
 #define RDR_ACTIVITY_NAME	453
 
@@ -14,17 +12,14 @@ UserActivity::UserActivity()
 	FOptionsManager = NULL;
 	FRostersModel = NULL;
 	FRostersViewPlugin = NULL;
-
-	//FUserActivityLabelId = -1;
-
 }
 
 void UserActivity::addActivity(const QString &general, const QString &keyname, const QString &locname)
 {
 	ActivityData data = {general, locname, IconStorage::staticStorage(RSR_STORAGE_ACTIVITYICONS)->getIcon(keyname)};
 	FActivityCatalog.insert(keyname, data);
+	FActivityList.append(keyname);
 }
-
 
 UserActivity::~UserActivity()
 {
@@ -318,7 +313,7 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 	if(!replyElem.isNull())
 	{
 		Jid senderJid;
-		ActivityTempData tempData;
+		Activity data;
 
 		senderJid = replyElem.attribute("from");
 		QDomElement eventElem = replyElem.firstChildElement("event");
@@ -336,17 +331,17 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 						QDomElement generalElem = activityElem.firstChildElement();
 						if(!generalElem.isNull() && FActivityCatalog.contains(generalElem.nodeName()))
 						{
-							tempData.activityGeneral = generalElem.nodeName();
+							data.general = generalElem.nodeName();
 							QDomElement specificElem = generalElem.firstChildElement();
 							if (!specificElem.isNull() && FActivityCatalog.contains(specificElem.nodeName()))
 							{
-								tempData.activitySpecific = specificElem.nodeName();
+								data.specific = specificElem.nodeName();
 							}
 						}
 						QDomElement textElem = activityElem.firstChildElement("text");
 						if(!textElem.isNull())
 						{
-							tempData.activityText = textElem.text();
+							data.text = textElem.text();
 						}
 					}
 					else
@@ -354,7 +349,7 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 				}
 			}
 		}
-		setContactActivity(streamJid, senderJid, tempData);
+		setContactActivity(streamJid, senderJid, data);
 	}
 	else
 		return false;
@@ -362,7 +357,7 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 	return true;
 }
 
-void UserActivity::setActivity(const Jid &streamJid, const ActivityTempData &tempData)
+void UserActivity::setActivity(const Jid &streamJid, const ActivityContact &contact)
 {
 	QDomDocument doc("");
 	QDomElement root = doc.createElement("item");
@@ -370,15 +365,15 @@ void UserActivity::setActivity(const Jid &streamJid, const ActivityTempData &tem
 
 	QDomElement activity = doc.createElementNS(ACTIVITY_PROTOCOL_URL, "activity");
 	root.appendChild(activity);
-	if(tempData.activityGeneral != ACTIVITY_NULL)
+	if(contact.keyname != ACTIVITY_NULL)
 	{
-		QDomElement general = doc.createElement(tempData.activityGeneral);
+		QDomElement general = doc.createElement(FActivityCatalog.value(contact.keyname).general);
 		activity.appendChild(general);
-		if((tempData.activitySpecific != tempData.activityGeneral) &&
-				(((tempData.activitySpecific != ACTIVITY_NULL) ||
-				  !tempData.activitySpecific.isEmpty())))
+		if((contact.keyname != FActivityCatalog.value(contact.keyname).general) &&
+				(((contact.keyname != ACTIVITY_NULL) ||
+				  !contact.keyname.isEmpty())))
 		{
-			QDomElement specific = doc.createElement(tempData.activitySpecific);
+			QDomElement specific = doc.createElement(contact.keyname);
 			general.appendChild(specific);
 		}
 	}
@@ -387,12 +382,12 @@ void UserActivity::setActivity(const Jid &streamJid, const ActivityTempData &tem
 		QDomElement name = doc.createElement("");
 		activity.appendChild(name);
 	}
-	if((tempData.activityGeneral != ACTIVITY_NULL) && (!tempData.activityText.isEmpty()))
+	if((contact.keyname != ACTIVITY_NULL) && (!contact.text.isEmpty()))
 	{
 		QDomElement text = doc.createElement("text");
 		activity.appendChild(text);
 
-		QDomText t1 = doc.createTextNode(tempData.activityText);
+		QDomText t1 = doc.createTextNode(contact.text);
 		text.appendChild(t1);
 	}
 	FPEPManager->publishItem(streamJid, ACTIVITY_PROTOCOL_URL, root);
@@ -483,31 +478,27 @@ void UserActivity::onSetActivityActionTriggered(bool)
 	{
 		Jid streamJid = action->data(ADR_STREAM_JID).toString();
 		UserActivityDialog *dialog;
-		dialog = new UserActivityDialog(this, FActivityCatalog, streamJid);
+		dialog = new UserActivityDialog(this, FActivityCatalog, FActivityList, streamJid);
 		WidgetManager::showActivateRaiseWindow(dialog);
 	}
 }
 
-void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid, const ActivityTempData &tempData)
+void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &data)
 {
-	if((((contactActivityKey(senderJid) != tempData.activityGeneral) &&
-		(contactActivityKey(senderJid) != tempData.activitySpecific)) ||
-		contactActivityText(senderJid) != tempData.activityText))
+	if((((contactActivityKey(senderJid) != data.general) &&
+		(contactActivityKey(senderJid) != data.specific)) ||
+		contactActivityText(senderJid) != data.text))
 	{
-		qDebug() << "G: " << tempData.activityGeneral << " S: " << tempData.activitySpecific << tempData.activityText;
-		if(!tempData.activityGeneral.isEmpty())
+		if(!data.general.isEmpty())
 		{
-			ActivityContact data;
-			data.keyname = tempData.activityGeneral;
-			qDebug() << "gen" << tempData.activityGeneral;
-
-			if ((!tempData.activitySpecific.isEmpty()) && (tempData.activitySpecific != ACTIVITY_NULL))
+			ActivityContact contact;
+			contact.keyname = data.general;
+			if ((!data.specific.isEmpty()) && (data.specific != ACTIVITY_NULL))
 			{
-				data.keyname = tempData.activitySpecific;
-				qDebug() << "spec" << tempData.activitySpecific;
+				contact.keyname = data.specific;
 			}
-			data.text = tempData.activityText;
-			FActivityContact.insert(senderJid.pBare(), data);
+			contact.text = data.text;
+			FActivityContact.insert(senderJid.pBare(), contact);
 			onShowNotification(streamJid, senderJid);
 		}
 		else
