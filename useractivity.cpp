@@ -146,7 +146,6 @@ bool UserActivity::initObjects()
 		notifyType.icon = IconStorage::staticStorage(RSR_STORAGE_MENUICONS)->getIcon(MNI_USERACTIVITY);
 		notifyType.title = tr("When receiving activity");
 		notifyType.kindMask = INotification::PopupWindow;
-		notifyType.kindDefs = notifyType.kindMask;
 		FNotifications->registerNotificationType(NNT_USERACTIVITY,notifyType);
 	}
 
