@@ -5,358 +5,358 @@
     <name>UserActivity</name>
     <message>
         <source>User Activity</source>
-        <translation type="unfinished"></translation>
+        <translation>User Activity</translation>
     </message>
     <message>
         <source>Allows you to send and receive information about user activities</source>
-        <translation type="unfinished"></translation>
+        <translation>Allows you to send and receive information about user activities</translation>
     </message>
     <message>
         <source>Supports the exchange of information about user activities</source>
-        <translation type="unfinished"></translation>
+        <translation>Supports the exchange of information about user activities</translation>
     </message>
     <message>
         <source>User activity notification</source>
-        <translation type="unfinished"></translation>
+        <translation>User activity notification</translation>
     </message>
     <message>
         <source>Without activity</source>
-        <translation type="unfinished"></translation>
+        <translation>Without activity</translation>
     </message>
     <message>
         <source>Doing chores</source>
-        <translation type="unfinished"></translation>
+        <translation>Doing chores</translation>
     </message>
     <message>
         <source>Buying groceries</source>
-        <translation type="unfinished"></translation>
+        <translation>Buying groceries</translation>
     </message>
     <message>
         <source>Cleaning</source>
-        <translation type="unfinished"></translation>
+        <translation>Cleaning</translation>
     </message>
     <message>
         <source>Cooking</source>
-        <translation type="unfinished"></translation>
+        <translation>Cooking</translation>
     </message>
     <message>
         <source>Doing maintenance</source>
-        <translation type="unfinished"></translation>
+        <translation>Doing maintenance</translation>
     </message>
     <message>
         <source>Doing the dishes</source>
-        <translation type="unfinished"></translation>
+        <translation>Doing the dishes</translation>
     </message>
     <message>
         <source>Doing the laundry</source>
-        <translation type="unfinished"></translation>
+        <translation>Doing the laundry</translation>
     </message>
     <message>
         <source>Gardening</source>
-        <translation type="unfinished"></translation>
+        <translation>Gardening</translation>
     </message>
     <message>
         <source>Running an errand</source>
-        <translation type="unfinished"></translation>
+        <translation>Running an errand</translation>
     </message>
     <message>
         <source>Walking the dog</source>
-        <translation type="unfinished"></translation>
+        <translation>Walking the dog</translation>
     </message>
     <message>
         <source>Activity</source>
-        <translation type="unfinished"></translation>
+        <translation>Activity</translation>
     </message>
     <message>
         <source>Activity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Activity:</translation>
     </message>
     <message>
         <source>When receiving activity</source>
-        <translation type="unfinished"></translation>
+        <translation>When receiving activity</translation>
     </message>
     <message>
         <source>Drinking</source>
-        <translation type="unfinished"></translation>
+        <translation>Drinking</translation>
     </message>
     <message>
         <source>Having a beer</source>
-        <translation type="unfinished"></translation>
+        <translation>Having a beer</translation>
     </message>
     <message>
         <source>Having coffee</source>
-        <translation type="unfinished"></translation>
+        <translation>Having coffee</translation>
     </message>
     <message>
         <source>Having tea</source>
-        <translation type="unfinished"></translation>
+        <translation>Having tea</translation>
     </message>
     <message>
         <source>Eating</source>
-        <translation type="unfinished"></translation>
+        <translation>Eating</translation>
     </message>
     <message>
         <source>Having a snack</source>
-        <translation type="unfinished"></translation>
+        <translation>Having a snack</translation>
     </message>
     <message>
         <source>Having breakfast</source>
-        <translation type="unfinished"></translation>
+        <translation>Having breakfast</translation>
     </message>
     <message>
         <source>Having dinner</source>
-        <translation type="unfinished"></translation>
+        <translation>Having dinner</translation>
     </message>
     <message>
         <source>Having lunch</source>
-        <translation type="unfinished"></translation>
+        <translation>Having lunch</translation>
     </message>
     <message>
         <source>Exercising</source>
-        <translation type="unfinished"></translation>
+        <translation>Exercising</translation>
     </message>
     <message>
         <source>Cycling</source>
-        <translation type="unfinished"></translation>
+        <translation>Cycling</translation>
     </message>
     <message>
         <source>Dancing</source>
-        <translation type="unfinished"></translation>
+        <translation>Dancing</translation>
     </message>
     <message>
         <source>Hiking</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiking</translation>
     </message>
     <message>
         <source>Jogging</source>
-        <translation type="unfinished"></translation>
+        <translation>Jogging</translation>
     </message>
     <message>
         <source>Playing sports</source>
-        <translation type="unfinished"></translation>
+        <translation>Playing sports</translation>
     </message>
     <message>
         <source>Running</source>
-        <translation type="unfinished"></translation>
+        <translation>Running</translation>
     </message>
     <message>
         <source>Skiing</source>
-        <translation type="unfinished"></translation>
+        <translation>Skiing</translation>
     </message>
     <message>
         <source>Swimming</source>
-        <translation type="unfinished"></translation>
+        <translation>Swimming</translation>
     </message>
     <message>
         <source>Working out</source>
-        <translation type="unfinished"></translation>
+        <translation>Working out</translation>
     </message>
     <message>
         <source>Grooming</source>
-        <translation type="unfinished"></translation>
+        <translation>Grooming</translation>
     </message>
     <message>
         <source>At the spa</source>
-        <translation type="unfinished"></translation>
+        <translation>At the spa</translation>
     </message>
     <message>
         <source>Brushing teeth</source>
-        <translation type="unfinished"></translation>
+        <translation>Brushing teeth</translation>
     </message>
     <message>
         <source>Getting a haircut</source>
-        <translation type="unfinished"></translation>
+        <translation>Getting a haircut</translation>
     </message>
     <message>
         <source>Shaving</source>
-        <translation type="unfinished"></translation>
+        <translation>Shaving</translation>
     </message>
     <message>
         <source>Taking a bath</source>
-        <translation type="unfinished"></translation>
+        <translation>Taking a bath</translation>
     </message>
     <message>
         <source>Taking a shower</source>
-        <translation type="unfinished"></translation>
+        <translation>Taking a shower</translation>
     </message>
     <message>
         <source>Having appointment</source>
-        <translation type="unfinished"></translation>
+        <translation>Having appointment</translation>
     </message>
     <message>
         <source>Inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Inactive</translation>
     </message>
     <message>
         <source>Day off</source>
-        <translation type="unfinished"></translation>
+        <translation>Day off</translation>
     </message>
     <message>
         <source>Hanging out</source>
-        <translation type="unfinished"></translation>
+        <translation>Hanging out</translation>
     </message>
     <message>
         <source>Hiding</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiding</translation>
     </message>
     <message>
         <source>On vacation</source>
-        <translation type="unfinished"></translation>
+        <translation>On vacation</translation>
     </message>
     <message>
         <source>Praying</source>
-        <translation type="unfinished"></translation>
+        <translation>Praying</translation>
     </message>
     <message>
         <source>Sheduled holiday</source>
-        <translation type="unfinished"></translation>
+        <translation>Sheduled holiday</translation>
     </message>
     <message>
         <source>Sleeping</source>
-        <translation type="unfinished"></translation>
+        <translation>Sleeping</translation>
     </message>
     <message>
         <source>Thinking</source>
-        <translation type="unfinished"></translation>
+        <translation>Thinking</translation>
     </message>
     <message>
         <source>Relaxing</source>
-        <translation type="unfinished"></translation>
+        <translation>Relaxing</translation>
     </message>
     <message>
         <source>Fishing</source>
-        <translation type="unfinished"></translation>
+        <translation>Fishing</translation>
     </message>
     <message>
         <source>Gaming</source>
-        <translation type="unfinished"></translation>
+        <translation>Gaming</translation>
     </message>
     <message>
         <source>Going out</source>
-        <translation type="unfinished"></translation>
+        <translation>Going out</translation>
     </message>
     <message>
         <source>Partying</source>
-        <translation type="unfinished"></translation>
+        <translation>Partying</translation>
     </message>
     <message>
         <source>Reading</source>
-        <translation type="unfinished"></translation>
+        <translation>Reading</translation>
     </message>
     <message>
         <source>Rehearsing</source>
-        <translation type="unfinished"></translation>
+        <translation>Rehearsing</translation>
     </message>
     <message>
         <source>Shopping</source>
-        <translation type="unfinished"></translation>
+        <translation>Shopping</translation>
     </message>
     <message>
         <source>Smoking</source>
-        <translation type="unfinished"></translation>
+        <translation>Smoking</translation>
     </message>
     <message>
         <source>Socializing</source>
-        <translation type="unfinished"></translation>
+        <translation>Socializing</translation>
     </message>
     <message>
         <source>Sunbathing</source>
-        <translation type="unfinished"></translation>
+        <translation>Sunbathing</translation>
     </message>
     <message>
         <source>Watching tv</source>
-        <translation type="unfinished"></translation>
+        <translation>Watching tv</translation>
     </message>
     <message>
         <source>Watching a movie</source>
-        <translation type="unfinished"></translation>
+        <translation>Watching a movie</translation>
     </message>
     <message>
         <source>Talking</source>
-        <translation type="unfinished"></translation>
+        <translation>Talking</translation>
     </message>
     <message>
         <source>In real life</source>
-        <translation type="unfinished"></translation>
+        <translation>In real life</translation>
     </message>
     <message>
         <source>On the phone</source>
-        <translation type="unfinished"></translation>
+        <translation>On the phone</translation>
     </message>
     <message>
         <source>On video phone</source>
-        <translation type="unfinished"></translation>
+        <translation>On video phone</translation>
     </message>
     <message>
         <source>Traveling</source>
-        <translation type="unfinished"></translation>
+        <translation>Traveling</translation>
     </message>
     <message>
         <source>Commuting</source>
-        <translation type="unfinished"></translation>
+        <translation>Commuting</translation>
     </message>
     <message>
         <source>Driving</source>
-        <translation type="unfinished"></translation>
+        <translation>Driving</translation>
     </message>
     <message>
         <source>In a car</source>
-        <translation type="unfinished"></translation>
+        <translation>In a car</translation>
     </message>
     <message>
         <source>On a bus</source>
-        <translation type="unfinished"></translation>
+        <translation>On a bus</translation>
     </message>
     <message>
         <source>On a plane</source>
-        <translation type="unfinished"></translation>
+        <translation>On a plane</translation>
     </message>
     <message>
         <source>On a train</source>
-        <translation type="unfinished"></translation>
+        <translation>On a train</translation>
     </message>
     <message>
         <source>On a trip</source>
-        <translation type="unfinished"></translation>
+        <translation>On a trip</translation>
     </message>
     <message>
         <source>Walking</source>
-        <translation type="unfinished"></translation>
+        <translation>Walking</translation>
     </message>
     <message>
         <source>Working</source>
-        <translation type="unfinished"></translation>
+        <translation>Working</translation>
     </message>
     <message>
         <source>Coding</source>
-        <translation type="unfinished"></translation>
+        <translation>Coding</translation>
     </message>
     <message>
         <source>In a meeting</source>
-        <translation type="unfinished"></translation>
+        <translation>In a meeting</translation>
     </message>
     <message>
         <source>Studying</source>
-        <translation type="unfinished"></translation>
+        <translation>Studying</translation>
     </message>
     <message>
         <source>Writing</source>
-        <translation type="unfinished"></translation>
+        <translation>Writing</translation>
     </message>
     <message>
         <source>User Activity Notification</source>
-        <translation type="unfinished"></translation>
+        <translation>User Activity Notification</translation>
     </message>
     <message>
         <source>changed activity</source>
-        <translation type="unfinished"></translation>
+        <translation>changed activity</translation>
     </message>
 </context>
 <context>
     <name>UserActivityDialog</name>
     <message>
         <source>Set activity</source>
-        <translation type="unfinished"></translation>
+        <translation>Set activity</translation>
     </message>
 </context>
 </TS>
