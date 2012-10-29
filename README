@@ -43,6 +43,10 @@ CHANGELOG
 =========
   LEGEND: [+]-New feature [*]-Enhancement [-]-Bug fix
 
+  v0.3
+  ------
+  [-] Notifications fixed, NDR_TOOLTIP added.
+
   v0.2
   ------
   [-] Updated dialog

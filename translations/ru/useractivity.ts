@@ -345,12 +345,12 @@
         <translation>Пишу</translation>
     </message>
     <message>
-        <source>User Activity Notification</source>
-        <translation>Уведомление о смене занятия</translation>
-    </message>
-    <message>
         <source>changed activity</source>
         <translation>сменил занятие</translation>
+    </message>
+    <message>
+        <source>Activity changed</source>
+        <translation>Занятие изменено</translation>
     </message>
 </context>
 <context>

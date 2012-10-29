@@ -344,11 +344,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>User Activity Notification</source>
+        <source>changed activity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>changed activity</source>
+        <source>Activity changed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

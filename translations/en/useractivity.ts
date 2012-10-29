@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" sourcelanguage="en">
+<TS version="2.0" language="ru_RU" sourcelanguage="en">
 <context>
     <name>UserActivity</name>
     <message>
@@ -344,12 +344,12 @@
         <translation>Writing</translation>
     </message>
     <message>
-        <source>User Activity Notification</source>
-        <translation>User Activity Notification</translation>
-    </message>
-    <message>
         <source>changed activity</source>
         <translation>changed activity</translation>
+    </message>
+    <message>
+        <source>Activity changed</source>
+        <translation>Activity changed</translation>
     </message>
 </context>
 <context>

@@ -30,7 +30,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.1";
+	APluginInfo->version = "0.3";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -404,10 +404,11 @@ void UserActivity::onShowNotification(const Jid &AStreamJid, const Jid &AContact
 			notify.data.insert(NDR_ICON,contactActivityIcon(AContactJid));
 			notify.data.insert(NDR_STREAM_JID,AStreamJid.full());
 			notify.data.insert(NDR_CONTACT_JID,AContactJid.full());
-			notify.data.insert(NDR_POPUP_CAPTION,tr("User Activity Notification"));
-			notify.data.insert(NDR_POPUP_TITLE,QString("%1 %2").arg(FNotifications->contactName(AStreamJid, AContactJid)).arg(tr("changed activity")));
+			notify.data.insert(NDR_TOOLTIP,QString("%1 %2").arg(FNotifications->contactName(AStreamJid, AContactJid)).arg(tr("changed activity")));
+			notify.data.insert(NDR_POPUP_CAPTION,tr("Activity changed"));
+			notify.data.insert(NDR_POPUP_TITLE,FNotifications->contactName(AStreamJid, AContactJid));
 			notify.data.insert(NDR_POPUP_IMAGE,FNotifications->contactAvatar(AContactJid));
-			notify.data.insert(NDR_POPUP_HTML,QString("[%1] %2").arg(contactActivityName(AContactJid)).arg(contactActivityText(AContactJid)));
+			notify.data.insert(NDR_POPUP_HTML,QString("%1 %2").arg(contactActivityName(AContactJid)).arg(contactActivityText(AContactJid)));
 			FNotifies.insert(FNotifications->appendNotification(notify),AContactJid);
 		}
 	}
