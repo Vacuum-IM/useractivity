@@ -153,8 +153,7 @@
     </message>
     <message>
         <source>Grooming</source>
-        <translatorcomment>Гигиена</translatorcomment>
-        <translation></translation>
+        <translation>Гигиена</translation>
     </message>
     <message>
         <source>At the spa</source>
@@ -294,7 +293,7 @@
     </message>
     <message>
         <source>Commuting</source>
-        <translation>Еду с работы/на работу</translation>
+        <translation>С работы/на работу</translation>
     </message>
     <message>
         <source>Driving</source>

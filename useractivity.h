@@ -12,6 +12,7 @@
 #include <interfaces/ipepmanager.h>
 #include <interfaces/ipluginmanager.h>
 #include <interfaces/ipresence.h>
+#include <interfaces/iroster.h>
 #include <interfaces/irostersmodel.h>
 #include <interfaces/irostersview.h>
 #include <interfaces/iservicediscovery.h>
@@ -66,14 +67,15 @@ public:
 	virtual bool processPEPEvent(const Jid &streamJid, const Stanza &stanza);
 
 	//IUserMood
-	virtual void setActivity(const Jid &AStreamJid, const ActivityContact &contact);
+	virtual void setActivity(const Jid &streamJid, const Activity &activity);
 	virtual QIcon activityIcon(const QString &keyname) const;
 	virtual QString activityName(const QString &keyname) const;
-	virtual QIcon contactActivityIcon(const Jid &contactJid) const;
-	virtual QString contactActivityKey(const Jid &contactJid) const;
-	virtual QString contactActivityGeneralKey(const Jid &contactJid) const;
-	virtual QString contactActivityName(const Jid &contactJid) const;
-	virtual QString contactActivityText(const Jid &contactJid) const;
+	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QString contactActivityKey(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QString contactActivityName(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QString contactActivityText(const Jid &streamJid, const Jid &senderJid) const;
 
 signals:
 	//IRosterDataHolder
@@ -82,23 +84,25 @@ signals:
 protected slots:
 //    void onOptionsOpened();
 //    void onOptionsChanged(const OptionsNode &ANode);
-//    void onRosterIndexInserted(const Jid &AContactJid, const QString &AMood);
 	void onRosterIndexToolTips(IRosterIndex *AIndex, int ALabelId, QMultiMap<int, QString> &AToolTips);
-	void onShowNotification(const Jid &AStreamJid, const Jid &AContactJid);
+	void onShowNotification(const Jid &streamJid, const Jid &senderJid);
 	void onNotificationActivated(int ANotifyId);
 	void onNotificationRemoved(int ANotifyId);
 	void onRosterIndexInserted(IRosterIndex *AIndex);
 	void onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexes, int ALabelId, Menu *AMenu);
 	void onSetActivityActionTriggered(bool);
+	void onStreamOpened(IXmppStream *AXmppStream);
+	void onStreamClosed(IXmppStream *AXmppStream);
+	void onContactStateChanged(const Jid &streamJid, const Jid &contactJid, bool AStateOnline);
 	void onApplicationQuit();
 
 protected:
 	void addActivity(const QString &keyname, const QString &general, const QString &locname);
-	Action *createSetActivityAction(const Jid &AStreamJid, const QString &AFeature, QObject *AParent) const;
-	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &data);
+	Action *createSetActivityAction(const Jid &streamJid, const QString &AFeature, QObject *AParent) const;
+	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &activity);
 
 	//IRosterDataHolder
-	void updateDataHolder(const Jid &ASenderJid = Jid::null);
+	void updateDataHolder(const Jid &streamJid, const Jid &senderJid = Jid::null);
 
 private:
 	IMainWindowPlugin *FMainWindowPlugin;
@@ -107,6 +111,8 @@ private:
 	IServiceDiscovery *FDiscovery;
 	IXmppStreams *FXmppStreams;
 	IOptionsManager *FOptionsManager;
+	IRoster *FRoster;
+	IRosterPlugin *FRosterPlugin;
 	IRostersModel *FRostersModel;
 	IRostersViewPlugin *FRostersViewPlugin;
 	INotifications *FNotifications;
@@ -117,7 +123,7 @@ private:
 	QMap<int, Jid> FNotifies;
 	QList<QString> FActivityList;
 	QHash<QString, ActivityData> FActivityCatalog;
-	QHash<QString, ActivityContact> FActivityContact;
+	QHash<Jid, QHash <QString, Activity> > FActivityContact;
 };
 
 #endif // USERACTIVITY_H

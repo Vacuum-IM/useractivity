@@ -21,33 +21,28 @@ struct Activity
 struct ActivityData
 {
 	QString general;
+	QString specific;
 	QString locname;
 	QIcon icon;
-};
-
-class ActivityContact
-{
-public:
-	QString keyname;
-	QString text;
 };
 
 class IUserActivity
 {
 public:
 	virtual QObject *instance() = 0;
-	virtual void setActivity(const Jid &AStreamJid, const ActivityContact &contact) = 0;
+	virtual void setActivity(const Jid &AStreamJid, const Activity &activity) = 0;
 	virtual QIcon activityIcon(const QString &keyname) const = 0;
 	virtual QString activityName(const QString &keyname) const = 0;
-	virtual QIcon contactActivityIcon(const Jid &contactJid) const = 0;
-	virtual QString contactActivityKey(const Jid &contactJid) const = 0;
-	virtual QString contactActivityGeneralKey(const Jid &contactJid) const = 0;
-	virtual QString contactActivityName(const Jid &contactJid) const = 0;
-	virtual QString contactActivityText(const Jid &contactJid) const = 0;
+	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QString contactActivityKey(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QString contactActivityName(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QString contactActivityText(const Jid &streamJid, const Jid &senderJid) const = 0;
 //signals:
 };
 
-Q_DECLARE_INTERFACE(IUserActivity,"Vacuum.ExternalPlugin.IUserActivity/0.1")
+Q_DECLARE_INTERFACE(IUserActivity,"Vacuum.ExternalPlugin.IUserActivity/0.2")
 
 
 #endif // IUSERACTIVITY_H
