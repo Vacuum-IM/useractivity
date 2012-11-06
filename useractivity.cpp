@@ -494,20 +494,15 @@ void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid
 		(contactActivityText(streamJid, senderJid) != activity.text))
 	{
 		IRoster *roster = FRosterPlugin!=NULL ? FRosterPlugin->findRoster(streamJid) : NULL;
-		QList<IRosterItem> ritems = roster!=NULL ? roster->rosterItems() : QList<IRosterItem>();
-		foreach(IRosterItem ritem, ritems)
+		if((roster!=NULL && roster->rosterItem(senderJid).isValid) || streamJid.pBare() == senderJid.pBare())
 		{
-			if ((ritem.isValid && ritem.itemJid.pBare().contains(senderJid.pBare())) ||
-					streamJid.pBare() == senderJid.pBare())
+			if(!activity.general.isEmpty())
 			{
-				if(!activity.general.isEmpty())
-				{
-					FActivityContact[streamJid].insert(senderJid.pBare(), activity);
-					onShowNotification(streamJid, senderJid);
-				}
-				else
-					FActivityContact[streamJid].remove(senderJid.pBare());
+				FActivityContact[streamJid].insert(senderJid.pBare(), activity);
+				onShowNotification(streamJid, senderJid);
 			}
+			else
+				FActivityContact[streamJid].remove(senderJid.pBare());
 		}
 	}
 	updateDataHolder(streamJid, senderJid);
