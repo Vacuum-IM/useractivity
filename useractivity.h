@@ -70,12 +70,12 @@ public:
 	virtual void setActivity(const Jid &streamJid, const Activity &activity);
 	virtual QIcon activityIcon(const QString &keyname) const;
 	virtual QString activityName(const QString &keyname) const;
-	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &senderJid) const;
-	virtual QString contactActivityKey(const Jid &streamJid, const Jid &senderJid) const;
-	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &senderJid) const;
-	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &senderJid) const;
-	virtual QString contactActivityName(const Jid &streamJid, const Jid &senderJid) const;
-	virtual QString contactActivityText(const Jid &streamJid, const Jid &senderJid) const;
+	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &contactJid) const;
+	virtual QString contactActivityKey(const Jid &streamJid, const Jid &contactJid) const;
+	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const;
+	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &contactJid) const;
+	virtual QString contactActivityName(const Jid &streamJid, const Jid &contactJid) const;
+	virtual QString contactActivityText(const Jid &streamJid, const Jid &contactJid) const;
 
 signals:
 	//IRosterDataHolder
@@ -102,7 +102,8 @@ protected:
 	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &activity);
 
 	//IRosterDataHolder
-	void updateDataHolder(const Jid &streamJid, const Jid &senderJid = Jid::null);
+	void updateDataHolder(const Jid &streamJid, const Jid &senderJid);
+	void updateDataHolder(const Jid &streamJid);
 
 private:
 	IMainWindowPlugin *FMainWindowPlugin;

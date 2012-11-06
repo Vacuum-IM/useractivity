@@ -1,17 +1,21 @@
 #include "useractivity.h"
 
-#define ADR_STREAM_JID	Action::DR_StreamJid
+#define ADR_STREAM_JID		Action::DR_StreamJid
 #define RDR_ACTIVITY_NAME	453
 
 UserActivity::UserActivity()
 {
 	FMainWindowPlugin = NULL;
+	FPresencePlugin = NULL;
 	FPEPManager = NULL;
 	FDiscovery = NULL;
 	FXmppStreams = NULL;
 	FOptionsManager = NULL;
+	FRoster = NULL;
+	FRosterPlugin = NULL;
 	FRostersModel = NULL;
 	FRostersViewPlugin = NULL;
+	FNotifications = NULL;
 }
 
 void UserActivity::addActivity(const QString &general, const QString &keyname, const QString &locname)
@@ -124,13 +128,9 @@ bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrd
 		FOptionsManager = qobject_cast<IOptionsManager *>(plugin->instance());
 	}
 
-	connect(Options::instance(), SIGNAL(optionsOpened()), SLOT(onOptionsOpened()));
-	connect(Options::instance(), SIGNAL(optionsChanged(const OptionsNode &)), SLOT(onOptionsChanged(const OptionsNode &)));
-
 	connect(APluginManager->instance(), SIGNAL(aboutToQuit()), this, SLOT(onApplicationQuit()));
 
-
-	return FMainWindowPlugin != NULL;
+	return FMainWindowPlugin != NULL && FRosterPlugin !=NULL && FPEPManager !=NULL;
 }
 
 bool UserActivity::initObjects()
@@ -487,7 +487,6 @@ void UserActivity::onSetActivityActionTriggered(bool)
 	}
 }
 
-#include <QDebug>
 void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &activity)
 {
 	if((contactActivityGeneralKey(streamJid, senderJid) != activity.general) ||
@@ -523,20 +522,14 @@ void UserActivity::updateDataHolder(const Jid &streamJid, const Jid &senderJid)
 			findData.insert(RDR_TYPE, type);
 		findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
 
-		if(FActivityContact[streamJid].contains(senderJid.pBare()))
+		foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
 		{
-			foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
-			{
+			if(FActivityContact[streamJid].contains(senderJid.pBare()))
 				FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
-				emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
-			}
-		}
-		else
-			foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
-			{
+			else
 				FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
-				emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
-			}
+			emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
+		}
 	}
 }
 
@@ -551,14 +544,16 @@ void UserActivity::onStreamOpened(IXmppStream *AXmppStream)
 	}
 }
 
+
 void UserActivity::onStreamClosed(IXmppStream *AXmppStream)
 {
-	if (FRostersViewPlugin)
+	Jid streamJid = AXmppStream->streamJid();
+	FActivityContact.remove(streamJid);
+	if(FRostersViewPlugin && FRostersModel)
 	{
-		IRostersModel *model = FRostersViewPlugin->rostersView()->rostersModel();
-		IRosterIndex *index = model!=NULL ? model->streamRoot(AXmppStream->streamJid()) : NULL;
-		if (index!=NULL)
-			FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
+		IRosterIndex *index = FRostersModel->streamRoot(streamJid);
+		FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
+		emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
 	}
 }
 
@@ -569,7 +564,7 @@ void UserActivity::onContactStateChanged(const Jid &streamJid, const Jid &contac
 		if (FActivityContact[streamJid].contains(contactJid.pBare()))
 		{
 			FActivityContact[streamJid].remove(contactJid.pBare());
-			emit updateDataHolder(streamJid, contactJid);
+			updateDataHolder(streamJid, contactJid);
 		}
 	}
 }
@@ -599,35 +594,35 @@ QString UserActivity::activityName(const QString &keyname) const
 {
 	return FActivityCatalog.value(keyname).locname;
 }
-QIcon UserActivity::contactActivityIcon(const Jid &streamJid, const Jid &senderJid) const
+QIcon UserActivity::contactActivityIcon(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(senderJid.pBare()).specific.isNull() ?
-				FActivityCatalog.value(FActivityContact[streamJid].value(senderJid.pBare()).specific).icon :
-				FActivityCatalog.value(FActivityContact[streamJid].value(senderJid.pBare()).general).icon;
+	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
+				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).icon :
+				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).icon;
 }
-QString UserActivity::contactActivityKey(const Jid &streamJid, const Jid &senderJid) const
+QString UserActivity::contactActivityKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(senderJid.pBare()).specific.isNull() ?
-			  FActivityContact[streamJid].value(senderJid.pBare()).specific :
-				FActivityContact[streamJid].value(senderJid.pBare()).general;
+	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
+			  FActivityContact[streamJid].value(contactJid.pBare()).specific :
+				FActivityContact[streamJid].value(contactJid.pBare()).general;
 }
-QString UserActivity::contactActivityGeneralKey(const Jid &streamJid, const Jid &senderJid) const
+QString UserActivity::contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return FActivityContact[streamJid].value(senderJid.pBare()).general;
+	return FActivityContact[streamJid].value(contactJid.pBare()).general;
 }
-QString UserActivity::contactActivitySpecialKey(const Jid &streamJid, const Jid &senderJid) const
+QString UserActivity::contactActivitySpecialKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return FActivityContact[streamJid].value(senderJid.pBare()).specific;
+	return FActivityContact[streamJid].value(contactJid.pBare()).specific;
 }
-QString UserActivity::contactActivityName(const Jid &streamJid, const Jid &senderJid) const
+QString UserActivity::contactActivityName(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(senderJid.pBare()).specific.isNull() ?
-				FActivityCatalog.value(FActivityContact[streamJid].value(senderJid.pBare()).specific).locname :
-				FActivityCatalog.value(FActivityContact[streamJid].value(senderJid.pBare()).general).locname;
+	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
+				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).locname :
+				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).locname;
 }
-QString UserActivity::contactActivityText(const Jid &streamJid, const Jid &senderJid) const
+QString UserActivity::contactActivityText(const Jid &streamJid, const Jid &contactJid) const
 {
-	QString text = FActivityContact[streamJid].value(senderJid.pBare()).text;
+	QString text = FActivityContact[streamJid].value(contactJid.pBare()).text;
 	return text.replace("\n", "<br>");
 }
 

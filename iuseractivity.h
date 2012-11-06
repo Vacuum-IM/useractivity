@@ -33,12 +33,12 @@ public:
 	virtual void setActivity(const Jid &AStreamJid, const Activity &activity) = 0;
 	virtual QIcon activityIcon(const QString &keyname) const = 0;
 	virtual QString activityName(const QString &keyname) const = 0;
-	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &senderJid) const = 0;
-	virtual QString contactActivityKey(const Jid &streamJid, const Jid &senderJid) const = 0;
-	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &senderJid) const = 0;
-	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &senderJid) const = 0;
-	virtual QString contactActivityName(const Jid &streamJid, const Jid &senderJid) const = 0;
-	virtual QString contactActivityText(const Jid &streamJid, const Jid &senderJid) const = 0;
+	virtual QIcon contactActivityIcon(const Jid &streamJid, const Jid &contactJid) const = 0;
+	virtual QString contactActivityKey(const Jid &streamJid, const Jid &contactJid) const = 0;
+	virtual QString contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const = 0;
+	virtual QString contactActivitySpecialKey(const Jid &streamJid, const Jid &contactJid) const = 0;
+	virtual QString contactActivityName(const Jid &streamJid, const Jid &contactJid) const = 0;
+	virtual QString contactActivityText(const Jid &streamJid, const Jid &contactJid) const = 0;
 //signals:
 };
 

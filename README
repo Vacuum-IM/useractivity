@@ -43,6 +43,10 @@ CHANGELOG
 =========
   LEGEND: [+]-New feature [*]-Enhancement [-]-Bug fix
 
+  v0.5
+  ------
+  [-] Fixed label on account and offline contacts
+
   v0.4
   ------
   [-] Duplicated notifications.
