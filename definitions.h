@@ -115,8 +115,8 @@
 //Option Widget Order
 #define OWO_USERACTIVITY 511
 
-//Roster Label Order
-#define RLO_USERACTIVITY RLAP_RIGHT_TOP + 255
+//Roster Labels
+#define RLID_USERACTIVITY AdvancedDelegateItem::makeId(AdvancedDelegateItem::MiddleCenter,128,AdvancedDelegateItem::AlignRightOrderMask | 255)
 
 //Roster ToolTip Order
 #define RTTO_USERACTIVITY 920

@@ -18,6 +18,11 @@ UserActivity::UserActivity()
 	FNotifications = NULL;
 }
 
+UserActivity::~UserActivity()
+{
+
+}
+
 void UserActivity::addActivity(const QString &general, const QString &keyname, const QString &locname)
 {
 	ActivityData data = {general, keyname, locname, IconStorage::staticStorage(RSR_STORAGE_ACTIVITYICONS)->getIcon(keyname)};
@@ -25,16 +30,11 @@ void UserActivity::addActivity(const QString &general, const QString &keyname, c
 	FActivityList.append(keyname);
 }
 
-UserActivity::~UserActivity()
-{
-
-}
-
 void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.4";
+	APluginInfo->version = "0.5";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -169,16 +169,16 @@ bool UserActivity::initObjects()
 
 	if(FRostersViewPlugin)
 	{
-		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexContextMenu(const QList<IRosterIndex *> &, int, Menu *)),SLOT(onRosterIndexContextMenu(const QList<IRosterIndex *> &, int, Menu *)));
-		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexToolTips(IRosterIndex *, int, QMultiMap<int, QString> &)),SLOT(onRosterIndexToolTips(IRosterIndex *, int, QMultiMap<int, QString> &)));
+		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)),SLOT(onRosterIndexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)));
+		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexToolTips(IRosterIndex *, quint32, QMap<int, QString> &)),SLOT(onRosterIndexToolTips(IRosterIndex *, quint32, QMap<int, QString> &)));
 	}
 
 	if(FRostersViewPlugin)
 	{
-		IRostersLabel label;
-		label.order = RLO_USERACTIVITY;
-		label.value = RDR_ACTIVITY_NAME;
-		FUserActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(label);
+		AdvancedDelegateItem notifyLabel(RLID_USERACTIVITY);
+		notifyLabel.d->kind = AdvancedDelegateItem::CustomData;
+		notifyLabel.d->data = RDR_ACTIVITY_NAME;
+		FUserActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(notifyLabel);
 	}
 
 	addActivity(ACTIVITY_NULL, ACTIVITY_NULL, tr("Without activity"));
@@ -434,9 +434,9 @@ void UserActivity::onNotificationRemoved(int ANotifyId)
 	}
 }
 
-void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexes, int ALabelId, Menu *AMenu)
+void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexes, quint32 ALabelId, Menu *AMenu)
 {
-	if(ALabelId == RLID_DISPLAY && AIndexes.count() == 1)
+	if(ALabelId == FUserActivityLabelId && AIndexes.count() == 1 && AIndexes.first()->type()==RIT_STREAM_ROOT)
 	{
 		IRosterIndex *index = AIndexes.first();
 		if(index->type() == RIT_STREAM_ROOT)
@@ -564,9 +564,9 @@ void UserActivity::onContactStateChanged(const Jid &streamJid, const Jid &contac
 	}
 }
 
-void UserActivity::onRosterIndexToolTips(IRosterIndex *AIndex, int ALabelId, QMultiMap<int, QString> &AToolTips)
+void UserActivity::onRosterIndexToolTips(IRosterIndex *AIndex, quint32 ALabelId, QMap<int, QString> &AToolTips)
 {
-	if(ALabelId == RLID_DISPLAY || ALabelId == FUserActivityLabelId)
+	if(ALabelId == FUserActivityLabelId)
 	{
 		Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
 		Jid contactJid = AIndex->data(RDR_PREP_BARE_JID).toString();
