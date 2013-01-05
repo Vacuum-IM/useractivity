@@ -412,7 +412,7 @@ void UserActivity::onShowNotification(const Jid &streamJid, const Jid &senderJid
 			notify.data.insert(NDR_POPUP_CAPTION,tr("Activity changed"));
 			notify.data.insert(NDR_POPUP_TITLE,FNotifications->contactName(streamJid, senderJid));
 			notify.data.insert(NDR_POPUP_IMAGE,FNotifications->contactAvatar(senderJid));
-			notify.data.insert(NDR_POPUP_HTML,QString("%1 %2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
+			notify.data.insert(NDR_POPUP_HTML,QString("<b>%1:</b> %2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
 			FNotifies.insert(FNotifications->appendNotification(notify),senderJid);
 		}
 	}
