@@ -34,7 +34,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.5";
+	APluginInfo->version = "0.5.1";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -271,7 +271,6 @@ bool UserActivity::initObjects()
 	addActivity(ACTIVITY_WORKING, ACTIVITY_STUDYING, tr("Studying"));
 	addActivity(ACTIVITY_WORKING, ACTIVITY_WRITING, tr("Writing"));
 
-
 	return true;
 }
 
@@ -412,7 +411,10 @@ void UserActivity::onShowNotification(const Jid &streamJid, const Jid &senderJid
 			notify.data.insert(NDR_POPUP_CAPTION,tr("Activity changed"));
 			notify.data.insert(NDR_POPUP_TITLE,FNotifications->contactName(streamJid, senderJid));
 			notify.data.insert(NDR_POPUP_IMAGE,FNotifications->contactAvatar(senderJid));
-			notify.data.insert(NDR_POPUP_HTML,QString("<b>%1:</b> %2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
+			if(!contactActivityText(streamJid,senderJid).isEmpty())
+				notify.data.insert(NDR_POPUP_HTML,QString("%1:<br>%2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
+			else
+				notify.data.insert(NDR_POPUP_HTML,QString("%1").arg(contactActivityName(streamJid, senderJid)));
 			FNotifies.insert(FNotifications->appendNotification(notify),senderJid);
 		}
 	}
@@ -421,22 +423,18 @@ void UserActivity::onShowNotification(const Jid &streamJid, const Jid &senderJid
 void UserActivity::onNotificationActivated(int ANotifyId)
 {
 	if (FNotifies.contains(ANotifyId))
-	{
 		FNotifications->removeNotification(ANotifyId);
-	}
 }
 
 void UserActivity::onNotificationRemoved(int ANotifyId)
 {
 	if (FNotifies.contains(ANotifyId))
-	{
 		FNotifies.remove(ANotifyId);
-	}
 }
 
 void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexes, quint32 ALabelId, Menu *AMenu)
 {
-	if(ALabelId == FUserActivityLabelId && AIndexes.count() == 1 && AIndexes.first()->type()==RIT_STREAM_ROOT)
+	if (ALabelId == AdvancedDelegateItem::DisplayId)
 	{
 		IRosterIndex *index = AIndexes.first();
 		if(index->type() == RIT_STREAM_ROOT)
@@ -598,7 +596,7 @@ QIcon UserActivity::contactActivityIcon(const Jid &streamJid, const Jid &contact
 QString UserActivity::contactActivityKey(const Jid &streamJid, const Jid &contactJid) const
 {
 	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
-			  FActivityContact[streamJid].value(contactJid.pBare()).specific :
+				FActivityContact[streamJid].value(contactJid.pBare()).specific :
 				FActivityContact[streamJid].value(contactJid.pBare()).general;
 }
 QString UserActivity::contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const
