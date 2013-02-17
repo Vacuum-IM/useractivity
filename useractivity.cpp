@@ -1,7 +1,7 @@
 #include "useractivity.h"
 
-#define ADR_STREAM_JID		Action::DR_StreamJid
-#define RDR_ACTIVITY_NAME	453
+#define ADR_STREAM_JID Action::DR_StreamJid
+#define RDR_ACTIVITY_NAME 453
 
 UserActivity::UserActivity()
 {
@@ -513,11 +513,12 @@ void UserActivity::updateDataHolder(const Jid &streamJid, const Jid &senderJid)
 		QMultiMap<int, QVariant> findData;
 		foreach(int type, rosterDataTypes())
 			findData.insert(RDR_TYPE, type);
-		findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
+		if (!senderJid.isEmpty())
+			findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
 
 		foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
 		{
-			if(FActivityContact[streamJid].contains(senderJid.pBare()))
+			if(FActivityContact[streamJid].contains(index->data(RDR_PREP_BARE_JID).toString()))
 				FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
 			else
 				FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
