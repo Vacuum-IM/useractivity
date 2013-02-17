@@ -1,7 +1,10 @@
 #include "useractivity.h"
 
-#define ADR_STREAM_JID		Action::DR_StreamJid
-#define RDR_ACTIVITY_NAME	453
+#define ADR_STREAM_JID Action::DR_StreamJid
+#define RDR_ACTIVITY_NAME 453
+
+#define DIC_PUBSUB "pubsub"
+#define DIT_PEP "pep"
 
 UserActivity::UserActivity()
 {
@@ -412,11 +415,15 @@ void UserActivity::onShowNotification(const Jid &streamJid, const Jid &senderJid
 			notify.data.insert(NDR_POPUP_CAPTION,tr("Activity changed"));
 			notify.data.insert(NDR_POPUP_TITLE,FNotifications->contactName(streamJid, senderJid));
 			notify.data.insert(NDR_POPUP_IMAGE,FNotifications->contactAvatar(senderJid));
-			notify.data.insert(NDR_POPUP_HTML,QString("%1 %2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
+			if(!contactActivityText(streamJid,senderJid).isEmpty())
+				notify.data.insert(NDR_POPUP_HTML,QString("%1:<br>%2").arg(contactActivityName(streamJid, senderJid)).arg(contactActivityText(streamJid, senderJid)));
+			else
+				notify.data.insert(NDR_POPUP_HTML,QString("%1").arg(contactActivityName(streamJid, senderJid)));
 			FNotifies.insert(FNotifications->appendNotification(notify),senderJid);
 		}
 	}
 }
+
 
 void UserActivity::onNotificationActivated(int ANotifyId)
 {
@@ -446,7 +453,7 @@ void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexe
 			if(presence && presence->isOpen())
 			{
 				int show = index->data(RDR_SHOW).toInt();
-				if(show != IPresence::Offline && show != IPresence::Error && FPEPManager->isSupported(streamJid))
+				if(show != IPresence::Offline && show != IPresence::Error && isSupported(streamJid))
 				{
 					Action *action = createSetActivityAction(streamJid, ACTIVITY_PROTOCOL_URL, AMenu);
 					AMenu->addAction(action, AG_RVCM_USERACTIVITY, false);
@@ -515,11 +522,12 @@ void UserActivity::updateDataHolder(const Jid &streamJid, const Jid &senderJid)
 		QMultiMap<int, QVariant> findData;
 		foreach(int type, rosterDataTypes())
 			findData.insert(RDR_TYPE, type);
-		findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
+		if (!senderJid.isEmpty())
+			findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
 
 		foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
 		{
-			if(FActivityContact[streamJid].contains(senderJid.pBare()))
+			if(FActivityContact[streamJid].contains(index->data(RDR_PREP_BARE_JID).toString()))
 				FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
 			else
 				FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
@@ -579,6 +587,18 @@ void UserActivity::onRosterIndexToolTips(IRosterIndex *AIndex, int ALabelId, QMu
 			AToolTips.insert(RTTO_USERACTIVITY, contactActivityText(streamJid, contactJid).isEmpty() ? tooltip_short : tooltip_full);
 		}
 	}
+}
+
+bool UserActivity::isSupported(const Jid &AStreamJid) const
+{
+	bool supported = false;
+	IDiscoInfo dinfo = FDiscovery!=NULL ? FDiscovery->discoInfo(AStreamJid, AStreamJid.domain()) : IDiscoInfo();
+	for (int i=0; !supported && i<dinfo.identity.count(); i++)
+	{
+		const IDiscoIdentity &ident = dinfo.identity.at(i);
+		supported = ident.category==DIC_PUBSUB && ident.type==DIT_PEP;
+	}
+	return supported;
 }
 
 QIcon UserActivity::activityIcon(const QString &keyname) const

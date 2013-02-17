@@ -97,6 +97,7 @@ protected slots:
 	void onApplicationQuit();
 
 protected:
+	bool isSupported(const Jid &AStreamJid) const;
 	void addActivity(const QString &keyname, const QString &general, const QString &locname);
 	Action *createSetActivityAction(const Jid &streamJid, const QString &AFeature, QObject *AParent) const;
 	void setContactActivity(const Jid &streamJid, const Jid &senderJid, const Activity &activity);
