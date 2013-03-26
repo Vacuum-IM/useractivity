@@ -3,6 +3,8 @@
 #define ADR_STREAM_JID Action::DR_StreamJid
 #define RDR_ACTIVITY_NAME 453
 
+static const QList<int> RosterKinds = QList<int>() << RIK_CONTACT << RIK_CONTACTS_ROOT << RIK_STREAM_ROOT;
+
 UserActivity::UserActivity()
 {
 	FMainWindowPlugin = NULL;
@@ -34,7 +36,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.5.1";
+	APluginInfo->version = "0.6";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -45,7 +47,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 
 bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrder)
 {
-	AInitOrder = 12;
+	AInitOrder = 20;
 
 	IPlugin *plugin = APluginManager->pluginInterface("IMainWindowPlugin").value(0);
 	if(plugin)
@@ -105,10 +107,17 @@ bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrd
 		FRostersModel = qobject_cast<IRostersModel *>(plugin->instance());
 	}
 
-	plugin = APluginManager->pluginInterface("IRostersViewPlugin").value(0, NULL);
-	if(plugin)
+	plugin = APluginManager->pluginInterface("IRostersViewPlugin").value(0,NULL);
+	if (plugin)
 	{
 		FRostersViewPlugin = qobject_cast<IRostersViewPlugin *>(plugin->instance());
+		if (FRostersViewPlugin)
+		{
+			connect(FRostersViewPlugin->rostersView()->instance(),SIGNAL(indexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)),
+				SLOT(onRostersViewIndexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)));
+			connect(FRostersViewPlugin->rostersView()->instance(),SIGNAL(indexToolTips(IRosterIndex *, quint32, QMap<int,QString> &)),
+				SLOT(onRostersViewIndexToolTips(IRosterIndex *, quint32, QMap<int,QString> &)));
+		}
 	}
 
 	plugin = APluginManager->pluginInterface("INotifications").value(0, NULL);
@@ -164,13 +173,7 @@ bool UserActivity::initObjects()
 
 	if(FRostersModel)
 	{
-		FRostersModel->insertDefaultDataHolder(this);
-	}
-
-	if(FRostersViewPlugin)
-	{
-		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)),SLOT(onRosterIndexContextMenu(const QList<IRosterIndex *> &, quint32, Menu *)));
-		connect(FRostersViewPlugin->rostersView()->instance(), SIGNAL(indexToolTips(IRosterIndex *, quint32, QMap<int, QString> &)),SLOT(onRosterIndexToolTips(IRosterIndex *, quint32, QMap<int, QString> &)));
+		FRostersModel->insertRosterDataHolder(RDHO_USERACTIVITY,this);
 	}
 
 	if(FRostersViewPlugin)
@@ -275,37 +278,38 @@ bool UserActivity::initObjects()
 }
 
 
-int UserActivity::rosterDataOrder() const
+QList<int> UserActivity::rosterDataRoles(int AOrder) const
 {
-	return RDHO_DEFAULT;
+	if (AOrder == RDHO_USERACTIVITY)
+		return QList<int>() << RDR_ACTIVITY_NAME;
+	return QList<int>();
 }
 
-QList<int> UserActivity::rosterDataRoles() const
+QVariant UserActivity::rosterData(int AOrder, const IRosterIndex *AIndex, int ARole) const
 {
-	static const QList<int> indexRoles = QList<int>() << RDR_ACTIVITY_NAME;
-	return indexRoles;
-}
-
-QList<int> UserActivity::rosterDataTypes() const
-{
-	static const QList<int> indexTypes = QList<int>() << RIT_STREAM_ROOT << RIT_CONTACT;
-	return indexTypes;
-}
-
-QVariant UserActivity::rosterData(const IRosterIndex *AIndex, int ARole) const
-{
-	if(FRostersViewPlugin && ARole == RDR_ACTIVITY_NAME)
+	Q_UNUSED(ARole);
+	if (AOrder == RDHO_USERACTIVITY)
 	{
-		Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
-		Jid senderJid = AIndex->data(RDR_PREP_BARE_JID).toString();
-		QIcon pic = contactActivityIcon(streamJid, senderJid);
-		return pic;
+		switch (AIndex->kind())
+		{
+		case RIK_STREAM_ROOT:
+		case RIK_CONTACT:
+		case RIK_CONTACTS_ROOT:
+			{
+				Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
+				Jid senderJid = AIndex->data(RDR_PREP_BARE_JID).toString();
+				QIcon pic = contactActivityIcon(streamJid, senderJid);
+				return pic;
+			}
+			break;
+		}
 	}
 	return QVariant();
 }
 
-bool UserActivity::setRosterData(IRosterIndex *AIndex, int ARole, const QVariant &AValue)
+bool UserActivity::setRosterData(int AOrder, const QVariant &AValue, IRosterIndex *AIndex, int ARole)
 {
+	Q_UNUSED(AOrder);
 	Q_UNUSED(AIndex);
 	Q_UNUSED(ARole);
 	Q_UNUSED(AValue);
@@ -363,32 +367,32 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 
 void UserActivity::setActivity(const Jid &streamJid, const Activity &activity)
 {
-	QDomDocument doc("");
-	QDomElement rootElem = doc.createElement("item");
-	doc.appendChild(rootElem);
+	QDomDocument docElem("");
+	QDomElement rootElem = docElem.createElement("item");
+	docElem.appendChild(rootElem);
 
-	QDomElement activityElem = doc.createElementNS(ACTIVITY_PROTOCOL_URL, "activity");
+	QDomElement activityElem = docElem.createElementNS(ACTIVITY_PROTOCOL_URL, "activity");
 	rootElem.appendChild(activityElem);
 	if(activity.general != ACTIVITY_NULL)
 	{
-		QDomElement generalElem = doc.createElement(activity.general);
+		QDomElement generalElem = docElem.createElement(activity.general);
 		activityElem.appendChild(generalElem);
 		if(!activity.specific.isEmpty())
 		{
-			QDomElement specificElem = doc.createElement(activity.specific);
+			QDomElement specificElem = docElem.createElement(activity.specific);
 			generalElem.appendChild(specificElem);
 		}
 		if(!activity.text.isEmpty())
 		{
-			QDomElement textElem = doc.createElement("text");
+			QDomElement textElem = docElem.createElement("text");
 			activityElem.appendChild(textElem);
-			QDomText t1 = doc.createTextNode(activity.text);
+			QDomText t1 = docElem.createTextNode(activity.text);
 			textElem.appendChild(t1);
 		}
 	}
 	else
 	{
-		QDomElement nameElem = doc.createElement("");
+		QDomElement nameElem = docElem.createElement("");
 		activityElem.appendChild(nameElem);
 	}
 
@@ -432,12 +436,12 @@ void UserActivity::onNotificationRemoved(int ANotifyId)
 		FNotifies.remove(ANotifyId);
 }
 
-void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexes, quint32 ALabelId, Menu *AMenu)
+void UserActivity::onRostersViewIndexContextMenu(const QList<IRosterIndex *> &AIndexes, quint32 ALabelId, Menu *AMenu)
 {
 	if (ALabelId == AdvancedDelegateItem::DisplayId)
 	{
 		IRosterIndex *index = AIndexes.first();
-		if(index->type() == RIT_STREAM_ROOT)
+		if(index->kind() == RIK_STREAM_ROOT)
 		{
 			Jid streamJid = index->data(RDR_STREAM_JID).toString();
 			IPresence *presence = FPresencePlugin != NULL ? FPresencePlugin->findPresence(streamJid) : NULL;
@@ -450,6 +454,23 @@ void UserActivity::onRosterIndexContextMenu(const QList<IRosterIndex *> &AIndexe
 					AMenu->addAction(action, AG_RVCM_USERACTIVITY, false);
 				}
 			}
+		}
+	}
+}
+
+void UserActivity::onRostersViewIndexToolTips(IRosterIndex *AIndex, quint32 ALabelId, QMap<int, QString> &AToolTips)
+{
+	if ((ALabelId==AdvancedDelegateItem::DisplayId && RosterKinds.contains(AIndex->kind())) || ALabelId == FUserActivityLabelId)
+	{
+		Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
+		Jid contactJid = AIndex->data(RDR_PREP_BARE_JID).toString();
+		if(!contactActivityKey(streamJid, contactJid).isEmpty())
+		{
+			QString tooltip_full = QString("<b>%1</b> %2<br>%3</div>")
+					.arg(tr("Activity:")).arg(contactActivityName(streamJid, contactJid)).arg(contactActivityText(streamJid, contactJid));
+			QString tooltip_short = QString("<b>%1</b> %2</div>")
+					.arg(tr("Activity:")).arg(contactActivityName(streamJid, contactJid));
+			AToolTips.insert(RTTO_USERACTIVITY, contactActivityText(streamJid, contactJid).isEmpty() ? tooltip_short : tooltip_full);
 		}
 	}
 }
@@ -508,13 +529,13 @@ void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid
 
 void UserActivity::updateDataHolder(const Jid &streamJid, const Jid &senderJid)
 {
-	if(FRostersViewPlugin && FRostersModel)
+	if(FRostersModel)
 	{
 		QMultiMap<int, QVariant> findData;
-		foreach(int type, rosterDataTypes())
-			findData.insert(RDR_TYPE, type);
-		if (!senderJid.isEmpty())
-			findData.insert(RDR_PREP_BARE_JID, senderJid.pBare());
+		findData.insert(RDR_PREP_BARE_JID,senderJid.pBare());
+		findData.insert(RDR_KIND,RIK_STREAM_ROOT);
+		findData.insert(RDR_KIND,RIK_CONTACT);
+		findData.insert(RDR_KIND,RIK_CONTACTS_ROOT);
 
 		foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
 		{
@@ -537,7 +558,6 @@ void UserActivity::onStreamOpened(IXmppStream *AXmppStream)
 			FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
 	}
 }
-
 
 void UserActivity::onStreamClosed(IXmppStream *AXmppStream)
 {
@@ -563,61 +583,51 @@ void UserActivity::onContactStateChanged(const Jid &streamJid, const Jid &contac
 	}
 }
 
-void UserActivity::onRosterIndexToolTips(IRosterIndex *AIndex, quint32 ALabelId, QMap<int, QString> &AToolTips)
-{
-	if ((ALabelId==AdvancedDelegateItem::DisplayId && rosterDataTypes().contains(AIndex->type())) || ALabelId == FUserActivityLabelId)
-	{
-		Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
-		Jid contactJid = AIndex->data(RDR_PREP_BARE_JID).toString();
-		if(!contactActivityKey(streamJid, contactJid).isEmpty())
-		{
-			QString tooltip_full = QString("%1 <div style='margin-left:10px;'>%2<br>%3</div>")
-					.arg(tr("Activity:")).arg(contactActivityName(streamJid, contactJid)).arg(contactActivityText(streamJid, contactJid));
-			QString tooltip_short = QString("%1 <div style='margin-left:10px;'>%2</div>")
-					.arg(tr("Activity:")).arg(contactActivityName(streamJid, contactJid));
-			AToolTips.insert(RTTO_USERACTIVITY, contactActivityText(streamJid, contactJid).isEmpty() ? tooltip_short : tooltip_full);
-		}
-	}
-}
-
 QIcon UserActivity::activityIcon(const QString &keyname) const
 {
 	return FActivityCatalog.value(keyname).icon;
 }
+
 QString UserActivity::activityName(const QString &keyname) const
 {
 	return FActivityCatalog.value(keyname).locname;
 }
+
 QIcon UserActivity::contactActivityIcon(const Jid &streamJid, const Jid &contactJid) const
 {
 	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
 				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).icon :
 				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).icon;
 }
+
 QString UserActivity::contactActivityKey(const Jid &streamJid, const Jid &contactJid) const
 {
 	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
 				FActivityContact[streamJid].value(contactJid.pBare()).specific :
 				FActivityContact[streamJid].value(contactJid.pBare()).general;
 }
+
 QString UserActivity::contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const
 {
 	return FActivityContact[streamJid].value(contactJid.pBare()).general;
 }
+
 QString UserActivity::contactActivitySpecialKey(const Jid &streamJid, const Jid &contactJid) const
 {
 	return FActivityContact[streamJid].value(contactJid.pBare()).specific;
 }
+
 QString UserActivity::contactActivityName(const Jid &streamJid, const Jid &contactJid) const
 {
 	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
 				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).locname :
 				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).locname;
 }
+
 QString UserActivity::contactActivityText(const Jid &streamJid, const Jid &contactJid) const
 {
 	QString text = FActivityContact[streamJid].value(contactJid.pBare()).text;
-	return text.replace("\n", "<br>");
+	return Qt::escape(text).replace("\n","<br>");
 }
 
 void UserActivity::onApplicationQuit()

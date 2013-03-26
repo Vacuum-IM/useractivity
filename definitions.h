@@ -115,6 +115,9 @@
 //Option Widget Order
 #define OWO_USERACTIVITY 511
 
+//Roster Data Holder Orders
+#define RDHO_USERACTIVITY 1000
+
 //Roster Labels
 #define RLID_USERACTIVITY AdvancedDelegateItem::makeId(AdvancedDelegateItem::MiddleCenter,128,AdvancedDelegateItem::AlignRightOrderMask | 255)
 
