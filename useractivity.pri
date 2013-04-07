@@ -1,9 +1,8 @@
 HEADERS = useractivity.h \
-	useractivitydialog.h \
-	iuseractivity.h
+          useractivitydialog.h \
+          iuseractivity.h
 
 SOURCES = useractivity.cpp \
-	useractivitydialog.cpp
+          useractivitydialog.cpp
 
-FORMS += \
-	useractivitydialog.ui
+FORMS =   useractivitydialog.ui
