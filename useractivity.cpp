@@ -18,6 +18,10 @@ UserActivity::UserActivity()
 	FRostersModel = NULL;
 	FRostersViewPlugin = NULL;
 	FNotifications = NULL;
+
+#ifdef DEBUG_RESOURCES_DIR
+	FileStorage::setResourcesDirs(FileStorage::resourcesDirs() << DEBUG_RESOURCES_DIR);
+#endif
 }
 
 UserActivity::~UserActivity()
