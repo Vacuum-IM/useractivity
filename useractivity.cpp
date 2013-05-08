@@ -1,7 +1,7 @@
 #include "useractivity.h"
 
 #define ADR_STREAM_JID Action::DR_StreamJid
-#define RDR_ACTIVITY_NAME 453
+#define RDR_USERACTIVITY 455
 
 static const QList<int> RosterKinds = QList<int>() << RIK_CONTACT << RIK_CONTACTS_ROOT << RIK_STREAM_ROOT;
 
@@ -18,6 +18,7 @@ UserActivity::UserActivity()
 	FRostersModel = NULL;
 	FRostersViewPlugin = NULL;
 	FNotifications = NULL;
+	FActivityLabelId = 0;
 
 #ifdef DEBUG_RESOURCES_DIR
 	FileStorage::setResourcesDirs(FileStorage::resourcesDirs() << DEBUG_RESOURCES_DIR);
@@ -32,7 +33,7 @@ UserActivity::~UserActivity()
 void UserActivity::addActivity(const QString &general, const QString &keyname, const QString &locname)
 {
 	ActivityData data = {general, keyname, locname, IconStorage::staticStorage(RSR_STORAGE_ACTIVITYICONS)->getIcon(keyname)};
-	FActivityCatalog.insert(keyname, data);
+	FActivities.insert(keyname, data);
 	FActivityList.append(keyname);
 }
 
@@ -51,7 +52,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 
 bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrder)
 {
-	AInitOrder = 20;
+	AInitOrder = 40;
 
 	IPlugin *plugin = APluginManager->pluginInterface("IMainWindowPlugin").value(0);
 	if(plugin)
@@ -77,7 +78,6 @@ bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrd
 		FXmppStreams = qobject_cast<IXmppStreams *>(plugin->instance());
 		if(FXmppStreams)
 		{
-			connect(FXmppStreams->instance(),SIGNAL(opened(IXmppStream *)),SLOT(onStreamOpened(IXmppStream *)));
 			connect(FXmppStreams->instance(),SIGNAL(closed(IXmppStream *)),SLOT(onStreamClosed(IXmppStream *)));
 		}
 	}
@@ -139,6 +139,11 @@ bool UserActivity::initConnections(IPluginManager *APluginManager, int &AInitOrd
 	if(plugin)
 	{
 		FOptionsManager = qobject_cast<IOptionsManager *>(plugin->instance());
+		if (FOptionsManager)
+		{
+			connect(Options::instance(),SIGNAL(optionsOpened()),SLOT(onOptionsOpened()));
+			connect(Options::instance(),SIGNAL(optionsChanged(OptionsNode)),SLOT(onOptionsChanged(OptionsNode)));
+		}
 	}
 
 	connect(APluginManager->instance(), SIGNAL(aboutToQuit()), this, SLOT(onApplicationQuit()));
@@ -184,8 +189,15 @@ bool UserActivity::initObjects()
 	{
 		AdvancedDelegateItem notifyLabel(RLID_USERACTIVITY);
 		notifyLabel.d->kind = AdvancedDelegateItem::CustomData;
-		notifyLabel.d->data = RDR_ACTIVITY_NAME;
-		FUserActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(notifyLabel);
+		notifyLabel.d->data = RDR_USERACTIVITY;
+		FActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(notifyLabel);
+
+		FRostersViewPlugin->rostersView()->insertLabelHolder(RLHO_USERACTIVITY,this);
+	}
+
+	if (FOptionsManager)
+	{
+		FOptionsManager->insertOptionsHolder(this);
 	}
 
 	addActivity(ACTIVITY_NULL, ACTIVITY_NULL, tr("Without activity"));
@@ -281,29 +293,46 @@ bool UserActivity::initObjects()
 	return true;
 }
 
+bool UserActivity::initSettings()
+{
+	Options::setDefaultValue(OPV_ROSTER_USER_ACTIVITY_ICON_SHOW,true);
+
+	return true;
+}
+
+QMultiMap<int, IOptionsWidget *> UserActivity::optionsWidgets(const QString &ANodeId, QWidget *AParent)
+{
+	QMultiMap<int, IOptionsWidget *> widgets;
+	if (FOptionsManager && ANodeId == OPN_ROSTER)
+	{
+		widgets.insertMulti(OWO_ROSTER_USER_ACTIVITY, FOptionsManager->optionsNodeWidget(Options::node(OPV_ROSTER_USER_ACTIVITY_ICON_SHOW),tr("Show user activities icons"),AParent));
+	}
+	return widgets;
+}
+
 
 QList<int> UserActivity::rosterDataRoles(int AOrder) const
 {
 	if (AOrder == RDHO_USERACTIVITY)
-		return QList<int>() << RDR_ACTIVITY_NAME;
+		return QList<int>() << RDR_USERACTIVITY;
 	return QList<int>();
 }
 
 QVariant UserActivity::rosterData(int AOrder, const IRosterIndex *AIndex, int ARole) const
 {
-	Q_UNUSED(ARole);
 	if (AOrder == RDHO_USERACTIVITY)
 	{
 		switch (AIndex->kind())
 		{
 		case RIK_STREAM_ROOT:
 		case RIK_CONTACT:
-		case RIK_CONTACTS_ROOT:
 			{
-				Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
-				Jid senderJid = AIndex->data(RDR_PREP_BARE_JID).toString();
-				QIcon pic = contactActivityIcon(streamJid, senderJid);
-				return pic;
+				if (ARole == RDR_USERACTIVITY)
+				{
+					Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
+					Jid senderJid = AIndex->data(RDR_PREP_BARE_JID).toString();
+					return QIcon(contactActivityIcon(streamJid, senderJid));
+				}
 			}
 			break;
 		}
@@ -319,6 +348,23 @@ bool UserActivity::setRosterData(int AOrder, const QVariant &AValue, IRosterInde
 	Q_UNUSED(AValue);
 	return false;
 }
+
+
+QList<quint32> UserActivity::rosterLabels(int AOrder, const IRosterIndex *AIndex) const
+{
+	QList<quint32> labels;
+	if (AOrder==RLHO_USERACTIVITY && FActivityIconsVisible && !AIndex->data(RDR_USERACTIVITY).isNull())
+		labels.append(FActivityLabelId);
+	return labels;
+}
+
+AdvancedDelegateItem UserActivity::rosterLabel(int AOrder, quint32 ALabelId, const IRosterIndex *AIndex) const
+{
+	Q_UNUSED(AOrder);
+	Q_UNUSED(AIndex);
+	return FRostersViewPlugin->rostersView()->registeredLabel(ALabelId);
+}
+
 
 bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 {
@@ -341,11 +387,11 @@ bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 					if(!activityElem.isNull())
 					{
 						QDomElement generalElem = activityElem.firstChildElement();
-						if(!generalElem.isNull() && FActivityCatalog.contains(generalElem.nodeName()))
+						if(!generalElem.isNull() && FActivities.contains(generalElem.nodeName()))
 						{
 							data.general = generalElem.nodeName();
 							QDomElement specificElem = generalElem.firstChildElement();
-							if (!specificElem.isNull() && FActivityCatalog.contains(specificElem.nodeName()))
+							if (!specificElem.isNull() && FActivities.contains(specificElem.nodeName()))
 							{
 								data.specific = specificElem.nodeName();
 							}
@@ -405,7 +451,7 @@ void UserActivity::setActivity(const Jid &streamJid, const Activity &activity)
 
 void UserActivity::onShowNotification(const Jid &streamJid, const Jid &senderJid)
 {
-	if (FNotifications && FActivityContact[streamJid].contains(senderJid.pBare()) && streamJid.pBare() != senderJid.pBare())
+	if (FNotifications && FContacts[streamJid].contains(senderJid.pBare()) && streamJid.pBare() != senderJid.pBare())
 	{
 		INotification notify;
 		notify.kinds = FNotifications->enabledTypeNotificationKinds(NNT_USERACTIVITY);
@@ -464,7 +510,7 @@ void UserActivity::onRostersViewIndexContextMenu(const QList<IRosterIndex *> &AI
 
 void UserActivity::onRostersViewIndexToolTips(IRosterIndex *AIndex, quint32 ALabelId, QMap<int, QString> &AToolTips)
 {
-	if ((ALabelId==AdvancedDelegateItem::DisplayId && RosterKinds.contains(AIndex->kind())) || ALabelId == FUserActivityLabelId)
+	if ((ALabelId==AdvancedDelegateItem::DisplayId && RosterKinds.contains(AIndex->kind())) || ALabelId == FActivityLabelId)
 	{
 		Jid streamJid = AIndex->data(RDR_STREAM_JID).toString();
 		Jid contactJid = AIndex->data(RDR_PREP_BARE_JID).toString();
@@ -505,7 +551,7 @@ void UserActivity::onSetActivityActionTriggered(bool)
 	{
 		Jid streamJid = action->data(ADR_STREAM_JID).toString();
 		UserActivityDialog *dialog;
-		dialog = new UserActivityDialog(this, FActivityCatalog, FActivityList, streamJid);
+		dialog = new UserActivityDialog(this, FActivities, FActivityList, streamJid);
 		WidgetManager::showActivateRaiseWindow(dialog);
 	}
 }
@@ -521,11 +567,11 @@ void UserActivity::setContactActivity(const Jid &streamJid, const Jid &senderJid
 		{
 			if(!activity.general.isEmpty())
 			{
-				FActivityContact[streamJid].insert(senderJid.pBare(), activity);
+				FContacts[streamJid].insert(senderJid.pBare(), activity);
 				onShowNotification(streamJid, senderJid);
 			}
 			else
-				FActivityContact[streamJid].remove(senderJid.pBare());
+				FContacts[streamJid].remove(senderJid.pBare());
 		}
 	}
 	updateDataHolder(streamJid, senderJid);
@@ -536,101 +582,91 @@ void UserActivity::updateDataHolder(const Jid &streamJid, const Jid &senderJid)
 	if(FRostersModel)
 	{
 		QMultiMap<int, QVariant> findData;
-		findData.insert(RDR_PREP_BARE_JID,senderJid.pBare());
+		if (!streamJid.isEmpty())
+			findData.insert(RDR_STREAM_JID,streamJid.pFull());
+		if (!senderJid.isEmpty())
+			findData.insert(RDR_PREP_BARE_JID,senderJid.pBare());
 		findData.insert(RDR_KIND,RIK_STREAM_ROOT);
 		findData.insert(RDR_KIND,RIK_CONTACT);
 		findData.insert(RDR_KIND,RIK_CONTACTS_ROOT);
 
-		foreach (IRosterIndex *index, FRostersModel->streamRoot(streamJid)->findChilds(findData, true))
-		{
-			if(FActivityContact[streamJid].contains(index->data(RDR_PREP_BARE_JID).toString()))
-				FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
-			else
-				FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
-			emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
-		}
-	}
-}
-
-void UserActivity::onStreamOpened(IXmppStream *AXmppStream)
-{
-	if (FRostersViewPlugin)
-	{
-		IRostersModel *model = FRostersViewPlugin->rostersView()->rostersModel();
-		IRosterIndex *index = model!=NULL ? model->streamRoot(AXmppStream->streamJid()) : NULL;
-		if (index!=NULL)
-			FRostersViewPlugin->rostersView()->insertLabel(FUserActivityLabelId,index);
+		foreach (IRosterIndex *index, FRostersModel->rootIndex()->findChilds(findData,true))
+			emit rosterDataChanged(index, RDR_USERACTIVITY);
 	}
 }
 
 void UserActivity::onStreamClosed(IXmppStream *AXmppStream)
 {
-	Jid streamJid = AXmppStream->streamJid();
-	FActivityContact.remove(streamJid);
-	if(FRostersViewPlugin && FRostersModel)
-	{
-		IRosterIndex *index = FRostersModel->streamRoot(streamJid);
-		FRostersViewPlugin->rostersView()->removeLabel(FUserActivityLabelId,index);
-		emit rosterDataChanged(index, RDR_ACTIVITY_NAME);
-	}
+	FContacts.remove(AXmppStream->streamJid());
 }
 
 void UserActivity::onContactStateChanged(const Jid &streamJid, const Jid &contactJid, bool AStateOnline)
 {
-	if (!AStateOnline)
+	if (!AStateOnline && FContacts[streamJid].contains(contactJid.pBare()))
 	{
-		if (FActivityContact[streamJid].contains(contactJid.pBare()))
-		{
-			FActivityContact[streamJid].remove(contactJid.pBare());
-			updateDataHolder(streamJid, contactJid);
-		}
+		FContacts[streamJid].remove(contactJid.pBare());
+		updateDataHolder(streamJid, contactJid);
+	}
+}
+
+void UserActivity::onOptionsOpened()
+{
+	onOptionsChanged(Options::node(OPV_ROSTER_USER_ACTIVITY_ICON_SHOW));
+}
+
+void UserActivity::onOptionsChanged(const OptionsNode &ANode)
+{
+	if (ANode.path() == OPV_ROSTER_USER_ACTIVITY_ICON_SHOW)
+	{
+		FActivityIconsVisible = ANode.value().toBool();
+		emit rosterLabelChanged(FActivityLabelId,NULL);
 	}
 }
 
 QIcon UserActivity::activityIcon(const QString &keyname) const
 {
-	return FActivityCatalog.value(keyname).icon;
+	return FActivities.value(keyname).icon;
 }
 
 QString UserActivity::activityName(const QString &keyname) const
 {
-	return FActivityCatalog.value(keyname).locname;
+	return FActivities.value(keyname).locname;
 }
 
 QIcon UserActivity::contactActivityIcon(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
-				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).icon :
-				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).icon;
+	return !FContacts[streamJid].value(contactJid.pBare()).specific.isNull() ?
+				FActivities.value(FContacts[streamJid].value(contactJid.pBare()).specific).icon :
+				FActivities.value(FContacts[streamJid].value(contactJid.pBare()).general).icon;
 }
 
 QString UserActivity::contactActivityKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
-				FActivityContact[streamJid].value(contactJid.pBare()).specific :
-				FActivityContact[streamJid].value(contactJid.pBare()).general;
+	return !FContacts[streamJid].value(contactJid.pBare()).specific.isNull() ?
+				FContacts[streamJid].value(contactJid.pBare()).specific :
+				FContacts[streamJid].value(contactJid.pBare()).general;
 }
 
 QString UserActivity::contactActivityGeneralKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return FActivityContact[streamJid].value(contactJid.pBare()).general;
+	return FContacts[streamJid].value(contactJid.pBare()).general;
 }
 
 QString UserActivity::contactActivitySpecialKey(const Jid &streamJid, const Jid &contactJid) const
 {
-	return FActivityContact[streamJid].value(contactJid.pBare()).specific;
+	return FContacts[streamJid].value(contactJid.pBare()).specific;
 }
 
 QString UserActivity::contactActivityName(const Jid &streamJid, const Jid &contactJid) const
 {
-	return !FActivityContact[streamJid].value(contactJid.pBare()).specific.isNull() ?
-				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).specific).locname :
-				FActivityCatalog.value(FActivityContact[streamJid].value(contactJid.pBare()).general).locname;
+	return !FContacts[streamJid].value(contactJid.pBare()).specific.isNull() ?
+				FActivities.value(FContacts[streamJid].value(contactJid.pBare()).specific).locname :
+				FActivities.value(FContacts[streamJid].value(contactJid.pBare()).general).locname;
 }
 
 QString UserActivity::contactActivityText(const Jid &streamJid, const Jid &contactJid) const
 {
-	QString text = FActivityContact[streamJid].value(contactJid.pBare()).text;
+	QString text = FContacts[streamJid].value(contactJid.pBare()).text;
 	return Qt::escape(text).replace("\n","<br>");
 }
 
@@ -639,4 +675,4 @@ void UserActivity::onApplicationQuit()
 	FPEPManager->removeNodeHandler(handlerId);
 }
 
-Q_EXPORT_PLUGIN2(plg_pepmanager, UserActivity)
+Q_EXPORT_PLUGIN2(plg_useractivity, UserActivity)

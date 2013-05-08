@@ -104,16 +104,13 @@
 #define MNI_USERACTIVITY "useractivity"
 
 //Options
-#define OPV_UT_SHOW_ROSTER_LABEL "show-roster-label"
-
-//Opton Nodes
-#define OPN_USERACTIVITY "UserActivity"
-
-//Option Node Order
-#define ONO_USERACTIVITY 866
+#define OPV_ROSTER_USER_ACTIVITY_ICON_SHOW "roster.user.activity.icon.show"
 
 //Option Widget Order
-#define OWO_USERACTIVITY 511
+#define OWO_ROSTER_USER_ACTIVITY 520
+
+//Roster Labels Holder Orders
+#define RLHO_USERACTIVITY 1040
 
 //Roster Data Holder Orders
 #define RDHO_USERACTIVITY 1000

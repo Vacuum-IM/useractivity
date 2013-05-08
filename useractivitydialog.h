@@ -27,7 +27,7 @@ protected slots:
 private:
 	Ui::UserActivityDialog ui;
 	IUserActivity *FUserActivity;
-	QHash<QString, ActivityData> FActivityCatalog;
+	QHash<QString, ActivityData> FActivity;
 	Jid FStreamJid;
 };
 

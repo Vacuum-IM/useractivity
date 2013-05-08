@@ -1,7 +1,7 @@
 #include "useractivitydialog.h"
 
 UserActivityDialog::UserActivityDialog(IUserActivity *AUserActivity,
-									   const QHash<QString, ActivityData> &AActivityCatalog,
+									   const QHash<QString, ActivityData> &AActivity,
 									   const QList<QString> &AActivityList,
 									   Jid &AStreamJid, QWidget *parent) : QDialog(parent)
 {
@@ -11,7 +11,7 @@ UserActivityDialog::UserActivityDialog(IUserActivity *AUserActivity,
 	IconStorage::staticStorage(RSR_STORAGE_MENUICONS)->insertAutoIcon(this, MNI_USERACTIVITY, 0, 0, "windowIcon");
 
 	FUserActivity = AUserActivity;
-	FActivityCatalog = AActivityCatalog;
+	FActivity = AActivity;
 	FStreamJid = AStreamJid;
 
 	QFont itemFont = ui.cmbActivity->font();
@@ -20,8 +20,8 @@ UserActivityDialog::UserActivityDialog(IUserActivity *AUserActivity,
 	QList<QString>::const_iterator i;
 	for (i = AActivityList.constBegin(); i != AActivityList.constEnd(); ++i)
 	{
-		ui.cmbActivity->addItem(AActivityCatalog.value(*i).icon, AActivityCatalog.value(*i).locname, *i);
-		if(*i == AActivityCatalog.value(*i).general)
+		ui.cmbActivity->addItem(AActivity.value(*i).icon, AActivity.value(*i).locname, *i);
+		if(*i == AActivity.value(*i).general)
 			ui.cmbActivity->setItemData(ui.cmbActivity->findData(*i), itemFont, Qt::FontRole);
 	}
 
@@ -47,12 +47,12 @@ void UserActivityDialog::onDialogAccepted()
 {
 	Activity activity;
 	QString key = ui.cmbActivity->itemData(ui.cmbActivity->currentIndex()).toString();
-	if(key == FActivityCatalog.value(key).general)
+	if(key == FActivity.value(key).general)
 		activity.general = key;
 	else
 	{
-		activity.general = FActivityCatalog.value(key).general;
-		activity.specific = FActivityCatalog.value(key).specific;
+		activity.general = FActivity.value(key).general;
+		activity.specific = FActivity.value(key).specific;
 	}
 	activity.text = ui.pteText->toPlainText();
 	FUserActivity->setActivity(FStreamJid, activity);

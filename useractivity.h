@@ -1,7 +1,6 @@
 #ifndef USERACTIVITY_H
 #define USERACTIVITY_H
 
-#include "definitions.h"
 #include "iuseractivity.h"
 #include "useractivitydialog.h"
 #include "ui_useractivitydialog.h"
@@ -22,7 +21,9 @@
 #include <definitions/notificationdataroles.h>
 #include <definitions/notificationtypeorders.h>
 #include <definitions/notificationtypes.h>
+#include <definitions/optionnodes.h>
 #include <definitions/optionvalues.h>
+#include <definitions/optionwidgetorders.h>
 #include <definitions/resources.h>
 #include <definitions/rosterdataholderorders.h>
 #include <definitions/rosterindexkinds.h>
@@ -40,10 +41,12 @@ class UserActivity :
 	public IPlugin,
 	public IUserActivity,
 	public IRosterDataHolder,
+	public IRostersLabelHolder,
+	public IOptionsHolder,
 	public IPEPHandler
 {
 	Q_OBJECT;
-	Q_INTERFACES(IPlugin IUserActivity IRosterDataHolder IPEPHandler);
+	Q_INTERFACES(IPlugin IUserActivity IRosterDataHolder IRostersLabelHolder IOptionsHolder IPEPHandler);
 
 public:
 	UserActivity();
@@ -54,17 +57,19 @@ public:
 	virtual void pluginInfo(IPluginInfo *APluginInfo);
 	virtual bool initConnections(IPluginManager *APluginManager, int &AInitOrder);
 	virtual bool initObjects();
-	virtual bool initSettings() { return true; }
+	virtual bool initSettings();
 	virtual bool startPlugin() { return true; }
-
+	//IOptionsHolder
+	virtual QMultiMap<int, IOptionsWidget *> optionsWidgets(const QString &ANodeId, QWidget *AParent);
 	//IRosterDataHolder
 	virtual QList<int> rosterDataRoles(int AOrder) const;
 	virtual QVariant rosterData(int AOrder, const IRosterIndex *AIndex, int ARole) const;
 	virtual bool setRosterData(int AOrder, const QVariant &AValue, IRosterIndex *AIndex, int ARole);
-
+	//IRostersLabelHolder
+	virtual QList<quint32> rosterLabels(int AOrder, const IRosterIndex *AIndex) const;
+	virtual AdvancedDelegateItem rosterLabel(int AOrder, quint32 ALabelId, const IRosterIndex *AIndex) const;
 	//IPEPHandler
 	virtual bool processPEPEvent(const Jid &streamJid, const Stanza &stanza);
-
 	//IUserActivity
 	virtual void setActivity(const Jid &streamJid, const Activity &activity);
 	virtual QIcon activityIcon(const QString &keyname) const;
@@ -79,6 +84,8 @@ public:
 signals:
 	//IRosterDataHolder
 	void rosterDataChanged(IRosterIndex *AIndex = NULL, int ARole = 0);
+	//IRostersLabelHolder
+	void rosterLabelChanged(quint32 ALabelId, IRosterIndex *AIndex = NULL);
 
 protected slots:
 	//INotification
@@ -89,10 +96,12 @@ protected slots:
 	void onRostersViewIndexContextMenu(const QList<IRosterIndex *> &AIndexes, quint32 ALabelId, Menu *AMenu);
 	void onRostersViewIndexToolTips(IRosterIndex *AIndex, quint32 ALabelId, QMap<int, QString> &AToolTips);
 	//IXmppStreams
-	void onStreamOpened(IXmppStream *AXmppStream);
 	void onStreamClosed(IXmppStream *AXmppStream);
 	//IPresencePlugin
 	void onContactStateChanged(const Jid &streamJid, const Jid &contactJid, bool AStateOnline);
+	//IOptionsHolder
+	void onOptionsOpened();
+	void onOptionsChanged(const OptionsNode &ANode);
 
 	void onSetActivityActionTriggered(bool);
 	void onApplicationQuit();
@@ -120,12 +129,13 @@ private:
 
 private:
 	int handlerId;
-	quint32 FUserActivityLabelId;
+	bool FActivityIconsVisible;
+	quint32 FActivityLabelId;
 
 	QMap<int, Jid> FNotifies;
 	QList<QString> FActivityList;
-	QHash<QString, ActivityData> FActivityCatalog;
-	QHash<Jid, QHash <QString, Activity> > FActivityContact;
+	QHash<QString, ActivityData> FActivities;
+	QHash<Jid, QHash <QString, Activity> > FContacts;
 };
 
 #endif // USERACTIVITY_H
