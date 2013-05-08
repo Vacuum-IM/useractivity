@@ -353,7 +353,7 @@
     </message>
     <message>
         <source>Show user activities icons</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать занятия</translation>
     </message>
 </context>
 <context>

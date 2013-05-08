@@ -41,7 +41,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.6";
+	APluginInfo->version = "0.7";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -161,7 +161,6 @@ bool UserActivity::initObjects()
 	feature.icon = IconStorage::staticStorage(RSR_STORAGE_MENUICONS)->getIcon(MNI_USERACTIVITY);
 	feature.description = tr("Supports the exchange of information about user activities");
 	feature.var = ACTIVITY_PROTOCOL_URL;
-
 	FDiscovery->insertDiscoFeature(feature);
 
 	feature.name = tr("User activity notification");
@@ -187,10 +186,10 @@ bool UserActivity::initObjects()
 
 	if(FRostersViewPlugin)
 	{
-		AdvancedDelegateItem notifyLabel(RLID_USERACTIVITY);
-		notifyLabel.d->kind = AdvancedDelegateItem::CustomData;
-		notifyLabel.d->data = RDR_USERACTIVITY;
-		FActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(notifyLabel);
+		AdvancedDelegateItem label(RLID_USERACTIVITY);
+		label.d->kind = AdvancedDelegateItem::CustomData;
+		label.d->data = RDR_USERACTIVITY;
+		FActivityLabelId = FRostersViewPlugin->rostersView()->registerLabel(label);
 
 		FRostersViewPlugin->rostersView()->insertLabelHolder(RLHO_USERACTIVITY,this);
 	}
@@ -349,7 +348,6 @@ bool UserActivity::setRosterData(int AOrder, const QVariant &AValue, IRosterInde
 	return false;
 }
 
-
 QList<quint32> UserActivity::rosterLabels(int AOrder, const IRosterIndex *AIndex) const
 {
 	QList<quint32> labels;
@@ -364,7 +362,6 @@ AdvancedDelegateItem UserActivity::rosterLabel(int AOrder, quint32 ALabelId, con
 	Q_UNUSED(AIndex);
 	return FRostersViewPlugin->rostersView()->registeredLabel(ALabelId);
 }
-
 
 bool UserActivity::processPEPEvent(const Jid &streamJid, const Stanza &stanza)
 {

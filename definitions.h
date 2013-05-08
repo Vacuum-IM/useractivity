@@ -92,8 +92,6 @@
 //RostersView - ContextMenu
 #define AG_RVCM_USERACTIVITY 300
 
-//MenuIcons
-
 //Notification Types
 #define NNT_USERACTIVITY "UserActivityNotify"
 
@@ -116,7 +114,7 @@
 #define RDHO_USERACTIVITY 1000
 
 //Roster Labels
-#define RLID_USERACTIVITY AdvancedDelegateItem::makeId(AdvancedDelegateItem::MiddleCenter,128,AdvancedDelegateItem::AlignRightOrderMask | 255)
+#define RLID_USERACTIVITY AdvancedDelegateItem::makeId(AdvancedDelegateItem::MiddleCenter,128,AdvancedDelegateItem::AlignRightOrderMask | 270)
 
 //Roster ToolTip Order
 #define RTTO_USERACTIVITY 920
