@@ -352,7 +352,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show user activities icons</source>
+        <source>Show contact activities icon</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

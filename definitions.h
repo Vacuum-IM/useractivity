@@ -2,7 +2,6 @@
 #define DEF_USERACTIVITY_DEFINITIONS_H
 
 //Namespaces
-
 #define ACTIVITY_PROTOCOL_URL "http://jabber.org/protocol/activity"
 #define ACTIVITY_NOTIFY_PROTOCOL_URL "http://jabber.org/protocol/activity+notify"
 
@@ -105,7 +104,7 @@
 #define OPV_ROSTER_USER_ACTIVITY_ICON_SHOW "roster.user.activity.icon.show"
 
 //Option Widget Order
-#define OWO_ROSTER_USER_ACTIVITY 520
+#define OWO_ROSTER_USERACTIVITY 146
 
 //Roster Labels Holder Orders
 #define RLHO_USERACTIVITY 1040

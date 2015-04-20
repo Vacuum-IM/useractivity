@@ -352,8 +352,8 @@
         <translation>Занятие изменено</translation>
     </message>
     <message>
-        <source>Show user activities icons</source>
-        <translation>Показывать занятия</translation>
+        <source>Show contact activities icon</source>
+        <translation>Показывать иконку активности контакта</translation>
     </message>
 </context>
 <context>
