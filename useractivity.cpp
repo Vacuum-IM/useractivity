@@ -40,7 +40,7 @@ void UserActivity::pluginInfo(IPluginInfo *APluginInfo)
 {
 	APluginInfo->name = tr("User Activity");
 	APluginInfo->description = tr("Allows you to send and receive information about user activities");
-	APluginInfo->version = "0.7";
+	APluginInfo->version = "0.8";
 	APluginInfo->author = "Alexey Ivanov aka krab";
 	APluginInfo->homePage = "http://code.google.com/p/vacuum-plugins";
 	APluginInfo->dependences.append(PEPMANAGER_UUID);
@@ -657,12 +657,10 @@ QString UserActivity::contactActivityName(const Jid &streamJid, const Jid &conta
 QString UserActivity::contactActivityText(const Jid &streamJid, const Jid &contactJid) const
 {
 	QString text = FContacts[streamJid].value(contactJid.pBare()).text;
-	return Qt::escape(text).replace("\n","<br>");
+	return text.replace("\n","<br>").toHtmlEscaped();
 }
 
 void UserActivity::onApplicationQuit()
 {
 	FPEPManager->removeNodeHandler(handlerId);
 }
-
-Q_EXPORT_PLUGIN2(plg_useractivity, UserActivity)

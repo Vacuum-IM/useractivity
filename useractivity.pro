@@ -3,7 +3,7 @@ include(qmake/config.inc)
 
 #Project configuration
 TARGET              = useractivity
-QT                  = core gui xml
+QT                  = core gui widgets xml
 include(useractivity.pri)
 
 #Default progect configuration

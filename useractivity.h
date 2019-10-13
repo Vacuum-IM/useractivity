@@ -47,6 +47,7 @@ class UserActivity :
 {
 	Q_OBJECT;
 	Q_INTERFACES(IPlugin IUserActivity IRosterDataHolder IRostersLabelHolder IOptionsDialogHolder IPEPHandler);
+	Q_PLUGIN_METADATA(IID "org.vacuum-im.plugins.UserActivity");
 
 public:
 	UserActivity();
